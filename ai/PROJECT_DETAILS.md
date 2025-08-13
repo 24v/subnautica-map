@@ -123,6 +123,27 @@ Vitest + React Testing Library
 **Code Style/Linting**: 
 ESLint + Prettier + TypeScript strict mode
 
+## System Dependencies
+
+**Required System Tools**: 
+- Node.js 18+ (for build process and development)
+- Git (for version control)
+
+**Package Manager**: 
+- pnpm (preferred for speed and efficiency)
+
+**Development Tools**: 
+- VS Code (recommended IDE with TypeScript support)
+- Modern web browser (Chrome/Firefox/Safari for development and testing)
+- React DevTools browser extension
+
+**Missing Dependency Protocol**: 
+If any specified dependency is missing during bootstrap or development:
+1. **STOP** - Do not proceed with alternatives
+2. **NOTIFY** - Inform user of missing dependency
+3. **REQUEST** - Ask for PROJECT_DETAILS.md update discussion
+4. **WAIT** - Wait for explicit approval before using alternatives
+
 ## Architecture & Design
 
 **Architecture Pattern**: 
