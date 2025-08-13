@@ -203,12 +203,21 @@ Vite with TypeScript React template (`pnpm create vite@latest subnautica-map --t
 
 - Not right away - Audio: howler (for atmospheric audio)
 
+**Git Hooks**: 
+- Optional: husky + lint-staged for pre-commit code quality checks
+
+**Environment Variables**: 
+- None required (fully client-side application)
+- Optional: VITE_APP_VERSION for build info display
+
 **Configuration Files Required**: 
 - tsconfig.json (with strict mode and path aliases)
 - eslint.config.js (React + TypeScript rules)
 - .prettierrc (consistent formatting)
 - vitest.config.ts (testing setup with jsdom)
 - .vscode/settings.json (editor configuration)
+- .vscode/extensions.json (recommended VS Code extensions)
+- .vscode/launch.json (debugging configuration for Chrome)
 
 **Directory Structure**: 
 ```
@@ -241,6 +250,7 @@ src/
 - POI management system with emoji categorization
 - Audio manager for atmospheric sounds
 - Local Storage persistence layer
+- Basic test files and examples (App.test.tsx, setup.ts)
 
 **Development Scripts**: 
 ```json
