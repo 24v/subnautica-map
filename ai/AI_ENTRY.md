@@ -192,9 +192,16 @@ The biggest risks to quality and project momentum come from **large, unfocused c
 - **No Drive-by Edits**  
   - Do not reformat, restructure, or refactor unrelated code in the same patch as your feature or fix.  
 - **When Stuck**  
-  - Ask for a decision rather than making assumptions.
-  - Ask if the user would like for you to create a spike, or a draft adr.
-  - DO NOT give up on doing it the correct way and just make stuff up. Like one time you couldnt get something to work so you decided to just drop the real API integration and to create mocks. That is NOT what I want.
+  - **MANDATORY**: If ANY specified tool, dependency, or command in PROJECT_DETAILS.md is missing or unavailable, STOP immediately
+  - **MANDATORY**: Request PROJECT_DETAILS.md update discussion before proceeding with any alternative approach
+  - Ask for a decision rather than making assumptions
+  - Ask if the user would like for you to create a spike, or a draft ADR
+  - **NEVER** substitute tools or dependencies without explicit PROJECT_DETAILS.md update approval
+  - **NEVER** give up on doing it the correct way and just make stuff up
+  - Examples of FORBIDDEN behavior:
+    - Switching from pnpm to npm without PROJECT_DETAILS.md update
+    - Dropping real API integration to create mocks without approval
+    - Using different libraries than specified without PROJECT_DETAILS.md update
 
 # Main functions
 
