@@ -267,10 +267,8 @@ The biggest risks to quality and project momentum come from **large, unfocused c
    - Add code templates and snippets
 
 5. **Initial Code Structure**:
-   - Create basic application entry points (refer to tech preferences)
-   - Set up routing structure if applicable (refer to tech preferences)
-   - Add initial component/module structure (refer to tech preferences)
-   - Create basic test files and examples (refer to tech preferences)
+   - ONLY create the bare amount required to see that the service is running and that the core libraries work.
+   - THIS is the most essential start.
 
 6. **Validation and Testing**:
    - Run initial build to verify setup
@@ -278,9 +276,10 @@ The biggest risks to quality and project momentum come from **large, unfocused c
    - Verify linting and formatting tools
    - Test development server startup
 
+7. Generate a PROJECT_PLAN.md (updating existing):
+   - This should have the next steps for actually building the project.
+
 **Output**: Fully functional project ready for development with all tools configured and working.
-
-
 
 ## Development
 Ongoing Phase: After bootstrap, the AI uses the same /ai context to guide incremental, test-driven development and keep work aligned with established rules and preferences.
