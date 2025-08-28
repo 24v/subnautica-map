@@ -1,17 +1,24 @@
-# AI Entry (Start Here)
+# AI_GUIDELINES
 
 This file is the **authoritative starting point** for any AI session on this repo. 
 
-- It tells you (the AI) what to read, in what order, how to behave and how to acknowledge the context you loaded. 
-- Read the entire file and use it to control your execution. 
-- Assume the contents apply to you (the AI), unless otherwise specified.
-- The user will point the AI to this file by prompts in a AI conversation.
-- The users can use one of the starter prompts described in this file to paste into an AI conversation.
+- It tells you (the AI) what to read, in what order, how to behave, and how to acknowledge the context you loaded. 
 
-# Overview
-## Purpose of this structure
+When the user says use the AI_GUIDELINES.md for the repo, do the following:
 
-We are creating a repeatable, AI-friendly project framework to avoid the common pitfalls of unstructured AI-assisted coding — such as circular progress, regression bugs, and ad-hoc debugging.
+### General Context
+- Read and understand AI_GUIDELINES.md (this file)
+- Read and understand PROJECT_DETAILS.md
+- Read and understand PROJECT_PLAN.md
+### Technical Context
+- Read and understand tech preference files (tech/*.md)
+- Read and understand coding guidelines (in this file)
+### Validation
+- Output that the AI_GUIDELINES.md loading was complete
+
+## Purpose of AI_GUIDELINES
+
+This is a repeatable, AI-friendly project framework to avoid the common pitfalls of unstructured AI-assisted coding — such as circular progress, regression bugs, and ad-hoc debugging.
 
 This is meant to create a more deliberate, production-grade collaboration between human and AI — balancing speed with structure, preventing drift, and maintaining momentum over the lifetime of the project.
 
@@ -25,85 +32,27 @@ The goals are to:
 
 ## Assumptions
 
-- This assumes that we are using an Agent AI code assitnant. For example, cascade in vscode. The assitant has the ability to run commands, edit files, search, etc. 
-
-## High Level Scheme
-
-This project uses a dedicated /ai folder as the single source of truth for how AI-assisted development should be performed:
-- The basis for this folder is in another repo. It is copied into the new project folder.
-- All AI-facing instructions, policies, preferences, templates, and project metadata live inside /ai. 
-- The AI should always begin work by reading AI_ENTRY.md file.
-- Some files are mostly edited by the user but others are generated or updated by the AI.
-- Users can make overrides and edits into the files directly
-- TODO: Talk about special sections of files or delimiters for overrides
-
-The /ai folder is designed so context can be restored at any time — even in a fresh session — by reloading AI_ENTRY.md and its linked files. This prevents losing track of the meta-execution plan, product details, or current work plan between conversations.
-
-This scheme turns the /ai folder into a persistent, self-contained playbook for how the project is developed, tested, and maintained with AI collaboration.
-
-# Execution Details
-This section describe the flow the AI should use when working on this project.
-
-## Flow 
-
-1. Start with AI_ENTRY.md and understand the overall scheme and steps
-2. **Read PROJECT_PLAN.md** - Understand current goals, active tasks, and project status
-3. **Validate Context Loading** - Complete the validation checklist below before proceeding
-4. **Review Current Sprint** - Check active tasks and priorities from PROJECT_PLAN.md
-5. For each task, read the relevant files and use them to control your next steps
-6. **Update PROJECT_PLAN.md** - Record progress, completed tasks, and any new decisions
-
-## Context Validation Checklist
-
-Before starting any work, the AI must complete this validation to ensure proper context loading:
-
-**Core Files Loaded**
-- [ ] Read and understood AI_ENTRY.md (this file)
-- [ ] Loaded PROJECT_INDEX.md for project overview and tech stack
-- [ ] Reviewed PROJECT_PRODUCT.md for product requirements
-- [ ] Checked PROJECT_PLAN.md for current work status
-
-**Technical Context**
-- [ ] Reviewed relevant tech preference files (tech/*.md)
-- [ ] Understood testing framework and requirements
-- [ ] Identified debugging and logging setup
-
-**Work Context**
-- [ ] Understood current phase (bootstrap vs ongoing development)
-- [ ] Identified any pending ADRs or architectural decisions
-- [ ] Reviewed recent changes and current work items
-
-**Validation Complete**
-- [ ] Explicitly acknowledge which files were successfully loaded
-- [ ] Note any missing files or context gaps
-- [ ] Confirm understanding of project goals and current priorities
-
-**If any validation items fail or files are missing, request clarification from the user before proceeding.**
+- This assumes that we are using an Agent AI code assistant. For example, cascade in Windsurf. The assitant has the ability to run commands, edit files, search, etc. 
 
 ## Files
 
-The AI uses these files to control its execution. For technology, the specific tech/*preferences take prioritiy over others.
-- Each file in /ai has a specific role (policy, plan, preferences, templates, or project data). 
+This project uses a dedicated /ai folder as the single source of truth for how AI-assisted development should be performed. All AI-facing instructions, policies, preferences, templates, and project metadata for the repo should live inside /ai. 
+
+- The AI uses these files to control its execution. 
 - The AI is expected to reference these files before making decisions or changes.
 - For example, reading testing guidelines before writing tests, or consulting templates before generating new artifacts.
 
-During bootstrap, the AI generally edits only PROJECT_* files and generated artifacts. During ongoing work, policy and template files are only changed if explicitly directed.
-
-Each file will have starting section to tell the AI about the file and what it is for. (On top of the descriptions provided here)
+- For technology, the specific tech/*preferences take prioritiy over others.
 
 ai/
  - Folder at root of project that contains all the ai collab artifacts
 
-ai/AI_ENTRY.md
-- The repo has a full file. Not typically edited by user on a per project basis.
--	Primary entry point for all AI interactions.
--	Used at the start of any new conversation to load the project context.
--	Contains starter prompts (version-controlled) for bootstrap and ongoing development phases.
--	Summarizes each file’s purpose and the types of meta-information it contains.
+ai/AI_GUIDELINES.md
+- Primary entry point for all AI interactions.
+- Used at the start of any new conversation to load the project context.
 
 ai/PROJECT_DETAILS.md:
 - Per project file
-- The repo has stub
 - Filled out by user and by AI collaboratively and as the project evolves
 - This is where we keep information about the project as a whole
 - Records stack, tools, testing flow, architecture, etc. Place to write detailed technology choices.
@@ -114,21 +63,10 @@ ai/PROJECT_PRODUCT.md:
 - Additional product infomrmation if required
 
 ai/PROJECT_PLAN.md:
-- The repo has a comprehensive stub template
-- Collaboratively updated by AI and user throughout development lifecycle
-- **Primary Goals**: High-level objectives and project vision
-- **Feature Roadmap**: Phased development plan with milestones and timelines
-- **Current Sprint**: Active tasks, progress tracking, and immediate focus areas
-- **Technical Milestones**: Bootstrap, development, and release phase checkpoints
-- **Decisions & Architecture**: Key decisions made and architectural notes
-- **Blockers & Issues**: Current obstacles and their resolution status
-- **Progress Tracking**: Completion percentages and recent updates
-- **AI Development Log**: AI actions and development history
 - Serves as the primary roadmap for maintaining project direction and context across sessions
 
 ai/tech/
-    - Repo has full contents for each of tehse
-    - Overriding is done through inline editing by user, or at a special override spot at the bottom, or in the PROJECT_DETAILS.md 
+   - Guidelines specific to individual technologies. Usually this is used to populate the PROJECT_DETAILS file
 
 ai/tech/PROJECT_PREFERENCDS.md
     - Layout of project, etc
@@ -140,21 +78,13 @@ ai/tech/PYTHON_PREFERENCES.md
     - etc.
 
 ai/templates:
-    - Repo has these stubs
     - These are the templates from which the real file (e.g. README.md) is generated
     - Copied to the correct place in the project as needed.
+    - They might not always be present
     - Base templates: README.base.md, CONTRIBUTING.base.md, .editorconfig, ESLint/Prettier bases, CI workflow bases, VS Code launch bases, .gitignore families (node, python, go, etc.), Playwright/Vitest base configs, Logging/Debugging/Testing docs bases, ADR template. Task templates
 
-## Editing Guidelines
-
-- During bootstrap, the AI generally edits only PROJECT_* files and generated artifacts. During ongoing work, policy and template files are only changed if explicitly directed.
-
-## Confimation
-- Before performing any task, the AI must output a “Context Acknowledgement” showing which /ai files it loaded (with version numbers) and confirming it has the full context needed to proceed.
-
 # Coding guidelines
-
-## Coding Guidelines
+These are guidelines around how to do coding updates on the repo.
 
 The biggest risks to quality and project momentum come from **large, unfocused changes**. To avoid these, work in **small, reviewable increments** and follow a deliberate plan.
 
@@ -173,11 +103,12 @@ The biggest risks to quality and project momentum come from **large, unfocused c
 ### General Principles
 - DO NOT give up on doing it the correct way and just make stuff up. 
    - Like one time you couldnt get something to work so you decided to just drop the real API integration and to create mocks. That is NOT what I want.
-   - Or one time you were supposed to use pnpm but it wasnt installed so you went off the railes.
+   - Or one time you were supposed to use pnpm but it wasnt installed so you went off the rails.
 - The PROJECT_DETAILS.md is the LAW. If something doesnt work or isnt working out then we need to work together to update that FIRST, then change our approach.
 - **Iterative**  
   - Work in short cycles with review between steps.  
   - Aim for patches ≤ 150 LoC unless explicitly approved otherwise.
+  - Don't go beyond what the requested feature or change that was asked.
 - **Test First**  
   - Write or update tests before implementing code.  
   - Ensure coverage for new functionality and regression protection for existing functionality.
@@ -203,9 +134,9 @@ The biggest risks to quality and project momentum come from **large, unfocused c
     - Dropping real API integration to create mocks without approval
     - Using different libraries than specified without PROJECT_DETAILS.md update
 
-# Main functions
+# Initialization Function
+These are guidelines around how to do project initialization.
 
-## Initialization
 **Purpose**: Collaborative effort to define project, starting architecture, and technology choices.
 
 **Process**:
@@ -281,10 +212,9 @@ The biggest risks to quality and project momentum come from **large, unfocused c
 
 **Output**: Fully functional project ready for development with all tools configured and working.
 
-## Development
-Ongoing Phase: After bootstrap, the AI uses the same /ai context to guide incremental, test-driven development and keep work aligned with established rules and preferences.
+# Commits
+These are guidelines for creating commits on the repo.
 
-## Commits
 **Purpose**: Handle git commits with high-quality, informative commit messages.
 
 **Process**:
@@ -322,7 +252,7 @@ Addresses initialization phase requirements for tech preference scanning.
 ```
 
 ```
-docs: Document initialization process in AI_ENTRY.md
+docs: Document initialization process in AI_GUIDELINES.md
 
 - Add detailed 3-step initialization workflow (User Setup → AI Init → Refinement)
 - Include explicit tech preferences scanning step
