@@ -9,14 +9,12 @@
 ## Project Goals
 
 ### Primary Objectives
-- [ ] **Goal 1**: Create a bearing-based coordinate system for POI mapping
-- [ ] **Goal 2**: Build an immersive UI that maintains Subnautica's atmospheric feel
-- [ ] **Goal 3**: Implement triangulation algorithms for coordinate calculation from bearings
+- [ ] 1) Build an immersive UI that maintains Subnautica's atmospheric feel
+- [ ] 2) Create a bearing-based coordinate system for POI mapping
+- [ ] 3) Implement triangulation algorithms for coordinate calculation from bearings
+- [ ] 4) Implement local data persistence for POI storage
 
-### Secondary Objectives
-- [ ] **Goal A**: Add atmospheric audio integration matching game ambiance
-- [ ] **Goal B**: Implement local data persistence for POI storage
-- [ ] **Goal C**: Create responsive design for various screen sizes
+// Unscoped - [ ] : Add atmospheric audio integration matching game ambiance
 
 ---
 
