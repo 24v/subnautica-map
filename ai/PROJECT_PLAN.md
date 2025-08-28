@@ -1,7 +1,7 @@
 # Subnautica Map TODO List
 
 ## Phase 1: Basic Functionality
-- [ ] Create POI data structure (name, type, x, y, notes)
+- [x] Create POI data structure (name, type, x, y, notes)
 - [ ] Create basic HTML canvas element
 - [ ] Add POI to map with click
 - [ ] Display POIs as colored dots on canvas

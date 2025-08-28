@@ -1,0 +1,65 @@
+/**
+ * Point of Interest (POI) types and data structures for Subnautica Map
+ */
+
+export type POIType = 
+  | 'wreck'
+  | 'structure' 
+  | 'biome'
+  | 'resource'
+  | 'cave'
+  | 'landmark'
+  | 'hazard'
+  | 'base'
+  | 'buoy';
+
+export interface POI {
+  id: string;
+  name: string;
+  type: POIType;
+  x: number;
+  y: number;
+  notes?: string;
+  depth?: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Bearing {
+  id: string;
+  fromPOIId: string;
+  toPOIId: string;
+  direction: number; // 0-359 degrees
+  distance: number; // meters
+  createdAt: Date;
+}
+
+export interface POIWithBearings extends POI {
+  bearings: Bearing[];
+}
+
+// POI type metadata for UI display
+export const POI_METADATA: Record<POIType, { emoji: string; color: string; label: string }> = {
+  wreck: { emoji: '🚢', color: '#ff6b35', label: 'Wreck' },
+  structure: { emoji: '🏭', color: '#4ecdc4', label: 'Structure' },
+  biome: { emoji: '🌊', color: '#45b7d1', label: 'Biome' },
+  resource: { emoji: '💎', color: '#96ceb4', label: 'Resource' },
+  cave: { emoji: '🕳️', color: '#786fa6', label: 'Cave' },
+  landmark: { emoji: '🎯', color: '#f9ca24', label: 'Landmark' },
+  hazard: { emoji: '⚠️', color: '#f0932b', label: 'Hazard' },
+  base: { emoji: '🔧', color: '#6c5ce7', label: 'Player Base' },
+  buoy: { emoji: '📍', color: '#a29bfe', label: 'Buoy' }
+};
+
+// Default POI for Lifeboat 5 (origin point)
+export const LIFEBOAT_5: POI = {
+  id: 'lifeboat-5',
+  name: 'Lifeboat 5',
+  type: 'landmark',
+  x: 0,
+  y: 0,
+  notes: 'Starting location - coordinate system origin',
+  depth: 0,
+  createdAt: new Date(),
+  updatedAt: new Date()
+};
