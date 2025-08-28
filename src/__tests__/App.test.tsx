@@ -13,8 +13,8 @@ describe('App', () => {
     expect(screen.getByText('Subnautica Map')).toBeInTheDocument()
   })
 
-  it('shows bootstrap completion message', () => {
+  it('shows canvas initialization message', () => {
     render(<App />)
-    expect(screen.getByText('Bootstrap complete. Ready for development.')).toBeInTheDocument()
+    expect(screen.getByText('Canvas initialized with coordinate grid and Lifeboat 5 origin point.')).toBeInTheDocument()
   })
 })

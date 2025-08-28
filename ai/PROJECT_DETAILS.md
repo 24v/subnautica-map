@@ -182,11 +182,12 @@ Component-based SPA with bearing-based triangulation and 2D map visualization
 4. `pnpm preview` - Preview production build
 
 ### How to Test the Project
-1. `pnpm test` - Run all tests with Vitest
-2. `pnpm test:watch` - Run tests in watch mode
+1. `pnpm test --run` - Run all tests once and exit (recommended for CI/validation)
+2. `pnpm test` - Run tests in watch mode (for development)
 3. `pnpm test:coverage` - Run tests with coverage report
 4. Tests located in `src/__tests__/` directory
 5. Focus on component rendering, bearing input validation, and triangulation algorithms
+6. Canvas components require proper mocking in test environment (jsdom)
 
 ### How to Debug
 1. Use browser DevTools for frontend debugging
@@ -313,15 +314,45 @@ src/
 ---
 
 ### Current Architecture
-[AI will document the actual implemented architecture here]
+**Component Structure**:
+- `MapCanvas.tsx` - Core canvas component with HTML5 Canvas API
+- `poi.ts` - TypeScript interfaces for POI data structures and metadata
+- Coordinate system with origin at canvas center (Lifeboat 5 position)
+- Ocean-themed visual design with deep blue background and light blue grid
+
+**Data Layer**:
+- POI interface with id, name, type, coordinates, notes, depth, timestamps
+- 9 POI types with emoji/color metadata for UI display
+- Bearing system for triangulation (direction + distance between POIs)
+- LIFEBOAT_5 constant as coordinate system origin
+
+**Testing Strategy**:
+- Canvas context mocking for jsdom environment
+- Component rendering tests with proper canvas element selection
+- Type validation for POI structures and bearings
+- Test command: `pnpm test --run` for CI/validation
 
 ### Key Implementation Details
-[AI will document important implementation decisions and patterns used]
+**Canvas Implementation**:
+- HTML5 Canvas with 2D context (not Konva as originally planned)
+- Grid-based coordinate system with 50px spacing
+- Origin point marked with yellow circle and label
+- Crosshair cursor for future click interactions
+
+**TypeScript Patterns**:
+- Strict typing with interfaces for all data structures
+- Enum-like POI types with metadata mapping
+- Default export for components, named exports for utilities
+
+**Testing Approach**:
+- Mock canvas getContext with proper TypeScript typing
+- Document.querySelector for canvas element selection in tests
+- Comprehensive POI type and structure validation
 
 ---
 
 ## AI Development Notes
 *This section is maintained by the AI during development*
 
-**Last Updated**: 2025-08-13
-**Updated By**: AI (Initialization Complete)
+**Last Updated**: 2025-08-27
+**Updated By**: AI (Phase 1 Steps 1-2 Complete)

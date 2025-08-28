@@ -2,7 +2,7 @@
 
 ## Phase 1: Basic Functionality
 - [x] Create POI data structure (name, type, x, y, notes)
-- [ ] Create basic HTML canvas element
+- [x] Create basic HTML canvas element
 - [ ] Add POI to map with click
 - [ ] Display POIs as colored dots on canvas
 - [ ] Delete POI with right-click
