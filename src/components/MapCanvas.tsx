@@ -1,17 +1,21 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
+import { POI, POIType } from '../types/poi';
 
 interface MapCanvasProps {
   width?: number;
   height?: number;
   className?: string;
+  onPOIAdd?: (poi: POI) => void;
 }
 
 export default function MapCanvas({ 
   width = 800, 
   height = 600, 
-  className = '' 
+  className = '',
+  onPOIAdd
 }: MapCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [pois, setPois] = useState<POI[]>([]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -62,8 +66,49 @@ export default function MapCanvas({
     ctx.textAlign = 'center';
     ctx.fillText('Lifeboat 5', 0, -15);
 
+    // Draw POIs
+    pois.forEach(poi => {
+      ctx.fillStyle = '#f39c12'; // Orange for POIs
+      ctx.strokeStyle = '#e67e22';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(poi.x, poi.y, 6, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.stroke();
+
+      // Label POI
+      ctx.fillStyle = '#2c3e50';
+      ctx.font = '10px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(poi.name, poi.x, poi.y - 10);
+    });
+
     ctx.restore();
-  }, [width, height]);
+  }, [width, height, pois]);
+
+  const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left - width / 2; // Convert to canvas coordinates
+    const y = event.clientY - rect.top - height / 2;
+
+    // Create new POI
+    const newPOI: POI = {
+      id: `poi-${Date.now()}`,
+      name: `POI ${pois.length + 1}`,
+      type: 'landmark' as POIType,
+      x,
+      y,
+      notes: 'Click to edit',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    setPois(prev => [...prev, newPOI]);
+    onPOIAdd?.(newPOI);
+  };
 
   return (
     <canvas
@@ -75,6 +120,7 @@ export default function MapCanvas({
         backgroundColor: '#1e3a8a', // Deep ocean blue background
         cursor: 'crosshair'
       }}
+      onClick={handleCanvasClick}
     />
   );
 }

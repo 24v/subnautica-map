@@ -3,8 +3,8 @@
 ## Phase 1: Basic Functionality
 - [x] Create POI data structure (name, type, x, y, notes)
 - [x] Create basic HTML canvas element
-- [ ] Add POI to map with click
-- [ ] Display POIs as colored dots on canvas
+- [x] Add POI to map with click
+- [x] Display POIs as colored dots on canvas
 - [ ] Delete POI with right-click
 - [ ] Save POIs to localStorage
 - [ ] Load POIs from localStorage on startup

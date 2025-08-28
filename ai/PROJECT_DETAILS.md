@@ -337,7 +337,8 @@ src/
 - HTML5 Canvas with 2D context (not Konva as originally planned)
 - Grid-based coordinate system with 50px spacing
 - Origin point marked with yellow circle and label
-- Crosshair cursor for future click interactions
+- Click-to-add POI functionality with coordinate conversion
+- POI rendering as orange circles with name labels
 
 **TypeScript Patterns**:
 - Strict typing with interfaces for all data structures
@@ -348,6 +349,13 @@ src/
 - Mock canvas getContext with proper TypeScript typing
 - Document.querySelector for canvas element selection in tests
 - Comprehensive POI type and structure validation
+- Canvas click event testing with getBoundingClientRect mocking
+
+**POI Interaction**:
+- Mouse click coordinate conversion to canvas space
+- Auto-generated POI names and IDs
+- State management with React hooks
+- Optional callback prop for POI creation events
 
 ---
 
@@ -355,4 +363,4 @@ src/
 *This section is maintained by the AI during development*
 
 **Last Updated**: 2025-08-27
-**Updated By**: AI (Phase 1 Steps 1-2 Complete)
+**Updated By**: AI (Phase 1 Steps 1-4 Complete)

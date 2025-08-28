@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import MapCanvas from '../../components/MapCanvas';
 
@@ -70,5 +70,43 @@ describe('MapCanvas', () => {
     expect(mockContext.translate).toHaveBeenCalledWith(200, 150); // center of 400x300
     expect(mockContext.beginPath).toHaveBeenCalled();
     expect(mockContext.stroke).toHaveBeenCalled();
+  });
+
+  it('handles canvas click to add POI', () => {
+    const onPOIAdd = vi.fn();
+    render(<MapCanvas onPOIAdd={onPOIAdd} />);
+    
+    const canvas = document.querySelector('canvas');
+    expect(canvas).toBeInTheDocument();
+
+    // Mock getBoundingClientRect
+    canvas!.getBoundingClientRect = vi.fn(() => ({
+      left: 0,
+      top: 0,
+      width: 800,
+      height: 600,
+      right: 800,
+      bottom: 600,
+      x: 0,
+      y: 0,
+      toJSON: vi.fn()
+    }));
+
+    // Click at position (100, 50) relative to canvas
+    fireEvent.click(canvas!, {
+      clientX: 100,
+      clientY: 50
+    });
+
+    // Should call onPOIAdd with new POI
+    expect(onPOIAdd).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'POI 1',
+        type: 'landmark',
+        x: -300, // 100 - 400 (half width)
+        y: -250, // 50 - 300 (half height)
+        notes: 'Click to edit'
+      })
+    );
   });
 });

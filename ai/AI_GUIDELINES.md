@@ -229,7 +229,7 @@ When the user says "commit" or "commit the changes":
 2. **Generate Commit Message**:
    - **Format**: Use conventional commit format when applicable
    - **Summary Line**: Clear, concise description (≤50 chars when possible)
-   - **Body**: Detailed explanation of what and why (if needed)
+   - **Body**: Detailed explanation of what and why (if needed). Be Brief.
    - **Context**: Reference relevant conversation topics, decisions, or framework phases
 
 3. **Commit Standards**:
@@ -245,10 +245,6 @@ feat: Add TypeScript React preferences for AI_DEV framework
 
 - Create TYPESCRIPT_REACT_PREFERENCES.md with comprehensive tech stack guidance
 - Include project structure, component patterns, and deployment preferences  
-- Support for Vite + React + TypeScript + pnpm modern stack
-- Enables consistent project initialization across similar tech stacks
-
-Addresses initialization phase requirements for tech preference scanning.
 ```
 
 ```
@@ -256,8 +252,6 @@ docs: Document initialization process in AI_GUIDELINES.md
 
 - Add detailed 3-step initialization workflow (User Setup → AI Init → Refinement)
 - Include explicit tech preferences scanning step
-- Define clear handoff points between user and AI responsibilities
-- Improve framework consistency and reusability
 
 Based on successful ai-dev-demo-project-ts initialization experience.
 ```
@@ -266,7 +260,4 @@ Based on successful ai-dev-demo-project-ts initialization experience.
 - Always stage all relevant changes before committing
 - Provide clear summary of what will be committed
 - Ask for confirmation only if commit scope is unusually large or sensitive
-
-## General
-Use this for just general stuff
 
