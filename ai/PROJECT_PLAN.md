@@ -1,33 +1,34 @@
 # Subnautica Map TODO List
 
-## Core Features
+## Phase 1: Basic Functionality
 - [ ] Create POI data structure (name, type, x, y, notes)
+- [ ] Create basic HTML canvas element
 - [ ] Add POI to map with click
 - [ ] Display POIs as colored dots on canvas
 - [ ] Delete POI with right-click
 - [ ] Save POIs to localStorage
 - [ ] Load POIs from localStorage on startup
 
-## Bearing System
-- [ ] Add bearing input form (compass direction + distance)
-- [ ] Calculate POI coordinates from bearing + reference point
-- [ ] Show bearing lines on map
-- [ ] Support multiple bearings for triangulation
-
-## Map Controls
+## Phase 2: Map Interaction
 - [ ] Pan map with mouse drag
 - [ ] Zoom in/out with mouse wheel
 - [ ] Reset view button
 - [ ] Show current coordinates on hover
 
-## POI Management
+## Phase 3: Bearing System
+- [ ] Add bearing input form (compass direction + distance)
+- [ ] Calculate POI coordinates from bearing + reference point
+- [ ] Show bearing lines on map
+- [ ] Support multiple bearings for triangulation
+
+## Phase 4: POI Management
 - [ ] Edit POI name and notes
 - [ ] Filter POIs by type (wreck, resource, biome, etc.)
 - [ ] Search POIs by name
 - [ ] Export POI list as JSON
 - [ ] Import POI list from JSON
 
-## UI Polish
+## Phase 5: UI Polish (After Core Features Work)
 - [ ] Subnautica-themed colors (blue/teal/orange)
 - [ ] Custom POI icons by type
 - [ ] Smooth animations for interactions
