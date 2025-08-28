@@ -9,46 +9,94 @@
 ## Project Goals
 
 ### Primary Objectives
-- [ ] **Goal 1**: [High-level primary objective]
-- [ ] **Goal 2**: [High-level primary objective]
-- [ ] **Goal 3**: [High-level primary objective]
+- [ ] **Goal 1**: Create a bearing-based coordinate system for POI mapping
+- [ ] **Goal 2**: Build an immersive UI that maintains Subnautica's atmospheric feel
+- [ ] **Goal 3**: Implement triangulation algorithms for coordinate calculation from bearings
 
 ### Secondary Objectives
-- [ ] **Goal A**: [Secondary objective or nice-to-have feature]
-- [ ] **Goal B**: [Secondary objective or nice-to-have feature]
+- [ ] **Goal A**: Add atmospheric audio integration matching game ambiance
+- [ ] **Goal B**: Implement local data persistence for POI storage
+- [ ] **Goal C**: Create responsive design for various screen sizes
 
 ---
 
 ## Feature Roadmap
 
 ### Phase 1: Core Foundation
-**Target**: [Timeline or milestone]
+**Target**: MVP with basic POI management and coordinate system
 
-- [ ] **Feature 1.1**: [Core feature description]
-  - [ ] Subtask 1
-  - [ ] Subtask 2
-  - [ ] Subtask 3
+- [ ] **Feature 1.1**: POI Data Management
+  - [ ] Create POI data structure (name, type, coordinates, bearings, notes)
+  - [ ] Implement local storage for POI persistence
+  - [ ] Add POI CRUD operations (Create, Read, Update, Delete)
 
-- [ ] **Feature 1.2**: [Core feature description]
-  - [ ] Subtask 1
-  - [ ] Subtask 2
+- [ ] **Feature 1.2**: Bearing-based Coordinate System
+  - [ ] Implement triangulation algorithms for coordinate calculation
+  - [ ] Create bearing input forms with validation
+  - [ ] Add coordinate optimization for multiple bearing references
+
+- [ ] **Feature 1.3**: Basic Map Visualization
+  - [ ] Create 2D canvas/SVG map component
+  - [ ] Implement POI rendering with different icons/colors by type
+  - [ ] Add zoom and pan functionality
 
 ### Phase 2: Enhanced Functionality
-**Target**: [Timeline or milestone]
+**Target**: Full-featured mapping tool with immersive UI
 
-- [ ] **Feature 2.1**: [Enhanced feature description]
-  - [ ] Subtask 1
-  - [ ] Subtask 2
+- [ ] **Feature 2.1**: Immersive Subnautica UI
+  - [ ] Design and implement Subnautica-themed color scheme
+  - [ ] Create custom UI components matching game aesthetic
+  - [ ] Add atmospheric visual effects and animations
 
-- [ ] **Feature 2.2**: [Enhanced feature description]
-  - [ ] Subtask 1
-  - [ ] Subtask 2
+- [ ] **Feature 2.2**: Advanced POI Features
+  - [ ] Implement POI categories (wrecks, resources, biomes, caves, etc.)
+  - [ ] Add POI search and filtering functionality
+  - [ ] Create POI detail views with rich information
+
+- [ ] **Feature 2.3**: Map Enhancements
+  - [ ] Add distance measurement tools
+  - [ ] Implement bearing lines visualization
+  - [ ] Create coordinate grid overlay option
 
 ### Phase 3: Polish & Optimization
-**Target**: [Timeline or milestone]
+**Target**: Production-ready with audio and advanced features
 
-- [ ] **Feature 3.1**: [Polish/optimization feature]
+- [ ] **Feature 3.1**: Audio Integration
+  - [ ] Add atmospheric Subnautica-inspired background audio
+  - [ ] Implement audio cues for POI interactions
+  - [ ] Create audio settings and controls
+
+- [ ] **Feature 3.2**: Advanced Features
+  - [ ] Add import/export functionality for POI data
+  - [ ] Implement coordinate system debugging tools
+  - [ ] Create batch POI operations
+
+- [ ] **Feature 3.3**: Performance & UX
+  - [ ] Optimize rendering for large numbers of POIs
+  - [ ] Add responsive design for mobile devices
+  - [ ] Implement keyboard shortcuts and accessibility features
 - [ ] **Feature 3.2**: [Polish/optimization feature]
+
+---
+
+## Current Sprint
+
+### Sprint 1: Project Bootstrap & Foundation Setup
+**Status**: ✅ COMPLETED
+**Duration**: Initial setup
+
+**Completed Tasks**:
+- [x] Set up TypeScript + React + Vite project structure
+- [x] Configure development environment (ESLint, Prettier, testing)
+- [x] Create essential configuration files
+- [x] Install and validate all dependencies
+- [x] Set up VS Code workspace settings
+- [x] Create initial React application with basic UI
+- [x] Implement test framework with sample tests
+- [x] Generate project documentation (README.md)
+- [x] Update PROJECT_PLAN.md with detailed roadmap
+
+**Next Sprint**: Begin Phase 1 - Core Foundation development
 
 ---
 
