@@ -12,7 +12,7 @@
 - [x] Zoom in/out with mouse wheel
 - [x] Responsive canvas that fills viewport
 - [x] Styled Subnautica-themed UI
-- [ ] Reset view button
+- [x] Reset view button
 - [ ] Show current coordinates on hover
 
 ## Phase 3: Bearing System
