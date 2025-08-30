@@ -94,20 +94,39 @@ export default function MapCanvas({
     const x = event.clientX - rect.left - width / 2; // Convert to canvas coordinates
     const y = event.clientY - rect.top - height / 2;
 
-    // Create new POI
-    const newPOI: POI = {
-      id: `poi-${Date.now()}`,
-      name: `POI ${pois.length + 1}`,
-      type: 'landmark' as POIType,
-      x,
-      y,
-      notes: 'Click to edit',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+    // Check if clicking on existing POI for deletion (right-click)
+    if (event.button === 2) {
+      const clickedPOI = pois.find(poi => {
+        const distance = Math.sqrt((poi.x - x) ** 2 + (poi.y - y) ** 2);
+        return distance <= 10; // 10px tolerance for clicking on POI
+      });
 
-    setPois(prev => [...prev, newPOI]);
-    onPOIAdd?.(newPOI);
+      if (clickedPOI) {
+        setPois(prev => prev.filter(poi => poi.id !== clickedPOI.id));
+        return;
+      }
+    }
+
+    // Create new POI (left-click only)
+    if (event.button === 0) {
+      const newPOI: POI = {
+        id: `poi-${Date.now()}`,
+        name: `POI ${pois.length + 1}`,
+        type: 'landmark' as POIType,
+        x,
+        y,
+        notes: 'Click to edit',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      setPois(prev => [...prev, newPOI]);
+      onPOIAdd?.(newPOI);
+    }
+  };
+
+  const handleContextMenu = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    event.preventDefault(); // Prevent browser context menu
   };
 
   return (
@@ -121,6 +140,7 @@ export default function MapCanvas({
         cursor: 'crosshair'
       }}
       onClick={handleCanvasClick}
+      onContextMenu={handleContextMenu}
     />
   );
 }

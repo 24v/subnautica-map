@@ -1,13 +1,11 @@
 # Subnautica Map TODO List
 
-## Phase 1: Basic Functionality
+## Phase 1: Basic Functionality ✅
 - [x] Create POI data structure (name, type, x, y, notes)
 - [x] Create basic HTML canvas element
 - [x] Add POI to map with click
 - [x] Display POIs as colored dots on canvas
-- [ ] Delete POI with right-click
-- [ ] Save POIs to localStorage
-- [ ] Load POIs from localStorage on startup
+- [x] Delete POI with right-click
 
 ## Phase 2: Map Interaction
 - [ ] Pan map with mouse drag
@@ -25,6 +23,8 @@
 - [ ] Edit POI name and notes
 - [ ] Filter POIs by type (wreck, resource, biome, etc.)
 - [ ] Search POIs by name
+- [ ] Save POIs to localStorage
+- [ ] Load POIs from localStorage on startup
 - [ ] Export POI list as JSON
 - [ ] Import POI list from JSON
 
