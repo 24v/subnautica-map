@@ -8,6 +8,7 @@ const mockContext = {
   save: vi.fn(),
   restore: vi.fn(),
   translate: vi.fn(),
+  scale: vi.fn(),
   beginPath: vi.fn(),
   moveTo: vi.fn(),
   lineTo: vi.fn(),
@@ -15,6 +16,11 @@ const mockContext = {
   arc: vi.fn(),
   fill: vi.fn(),
   fillText: vi.fn(),
+  fillStyle: '',
+  strokeStyle: '',
+  lineWidth: 1,
+  font: '',
+  textAlign: 'start',
 };
 
 // Mock canvas getContext with proper typing
@@ -136,7 +142,7 @@ describe('MapCanvas', () => {
     });
 
     // Verify POI was added by checking if drawing methods were called
-    expect(mockContext.fillText).toHaveBeenCalledWith('POI 1', 100, 40);
+    expect(mockContext.fillText).toHaveBeenCalledWith('POI 1', 500, 340);
 
     // Clear the mock calls to focus on deletion
     mockContext.fillText.mockClear();
@@ -153,7 +159,7 @@ describe('MapCanvas', () => {
 
     // After deletion, the POI should not be rendered anymore
     // The canvas should be redrawn without the POI
-    expect(mockContext.fillText).not.toHaveBeenCalledWith('POI 1', 100, 40);
+    expect(mockContext.fillText).not.toHaveBeenCalledWith('POI 1', 500, 340);
   });
 
   it('prevents context menu on right-click', () => {
@@ -241,5 +247,74 @@ describe('MapCanvas', () => {
         notes: 'Click to edit'
       })
     );
+  });
+
+  describe('Reset View Button', () => {
+    it('renders reset view button', () => {
+      render(<MapCanvas />);
+      
+      const resetButton = document.querySelector('.reset-view-btn');
+      expect(resetButton).toBeInTheDocument();
+      expect(resetButton).toHaveTextContent('Reset View');
+      expect(resetButton).toHaveAttribute('title', 'Reset view to origin');
+    });
+
+    it('calls onResetView callback when clicked', () => {
+      const mockOnResetView = vi.fn();
+      render(<MapCanvas onResetView={mockOnResetView} />);
+      
+      const resetButton = document.querySelector('.reset-view-btn');
+      expect(resetButton).toBeInTheDocument();
+      
+      fireEvent.click(resetButton!);
+      
+      expect(mockOnResetView).toHaveBeenCalledTimes(1);
+    });
+
+    it('resets view state when clicked', () => {
+      render(<MapCanvas />);
+      
+      const canvas = document.querySelector('canvas');
+      const resetButton = document.querySelector('.reset-view-btn');
+      
+      expect(canvas).toBeInTheDocument();
+      expect(resetButton).toBeInTheDocument();
+
+      // Mock getBoundingClientRect for mouse events
+      canvas!.getBoundingClientRect = vi.fn(() => ({
+        left: 0,
+        top: 0,
+        width: 800,
+        height: 600,
+        right: 800,
+        bottom: 600,
+        x: 0,
+        y: 0,
+        toJSON: vi.fn()
+      }));
+
+      // Simulate panning by dragging
+      fireEvent.mouseDown(canvas!, { clientX: 400, clientY: 300 });
+      fireEvent.mouseMove(canvas!, { clientX: 450, clientY: 350 });
+      fireEvent.mouseUp(canvas!);
+
+      // Clear mock calls from panning
+      mockContext.clearRect.mockClear();
+      mockContext.translate.mockClear();
+
+      // Click reset button
+      fireEvent.click(resetButton!);
+
+      // Verify canvas is redrawn with reset state
+      // The translate call should be back to center (400, 300) with no pan offset
+      expect(mockContext.translate).toHaveBeenCalledWith(400, 300);
+    });
+
+    it('has proper styling classes', () => {
+      render(<MapCanvas />);
+      
+      const resetButton = document.querySelector('.reset-view-btn');
+      expect(resetButton).toHaveClass('reset-view-btn');
+    });
   });
 });

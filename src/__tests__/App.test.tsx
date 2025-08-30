@@ -13,8 +13,8 @@ describe('App', () => {
     expect(screen.getByText('Subnautica Map')).toBeInTheDocument()
   })
 
-  it('shows canvas initialization message', () => {
+  it('shows reset view button', () => {
     render(<App />)
-    expect(screen.getByText('Canvas initialized with coordinate grid and Lifeboat 5 origin point.')).toBeInTheDocument()
+    expect(screen.getByText('Reset View')).toBeInTheDocument()
   })
 })
