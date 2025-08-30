@@ -21,6 +21,11 @@ export default function MapCanvas({
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  
+  // Zoom state management
+  const [zoomScale, setZoomScale] = useState(1);
+  const minZoom = 0.1;
+  const maxZoom = 5;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -32,9 +37,10 @@ export default function MapCanvas({
     // Clear canvas
     ctx.clearRect(0, 0, width, height);
 
-    // Set up coordinate system with origin at center + pan offset
+    // Set up coordinate system with origin at center + pan offset + zoom
     ctx.save();
     ctx.translate(width / 2 + panOffset.x, height / 2 + panOffset.y);
+    ctx.scale(zoomScale, zoomScale);
 
     // Draw coordinate grid (light blue, ocean-like)
     ctx.strokeStyle = 'rgba(69, 183, 209, 0.2)';
@@ -43,15 +49,15 @@ export default function MapCanvas({
     // Draw infinite grid lines that extend beyond viewport when panned
     const gridSize = 50;
     
-    // Calculate extended bounds to cover panned area
-    const extendedWidth = width + Math.abs(panOffset.x) * 2;
-    const extendedHeight = height + Math.abs(panOffset.y) * 2;
+    // Calculate extended bounds to cover panned and zoomed area
+    const extendedWidth = (width + Math.abs(panOffset.x) * 2) / zoomScale;
+    const extendedHeight = (height + Math.abs(panOffset.y) * 2) / zoomScale;
     
-    // Calculate grid start positions to align with grid
-    const gridStartX = Math.floor((-extendedWidth / 2 - panOffset.x) / gridSize) * gridSize;
-    const gridEndX = Math.ceil((extendedWidth / 2 - panOffset.x) / gridSize) * gridSize;
-    const gridStartY = Math.floor((-extendedHeight / 2 - panOffset.y) / gridSize) * gridSize;
-    const gridEndY = Math.ceil((extendedHeight / 2 - panOffset.y) / gridSize) * gridSize;
+    // Calculate grid start positions to align with grid (in world coordinates)
+    const gridStartX = Math.floor((-extendedWidth / 2 - panOffset.x / zoomScale) / gridSize) * gridSize;
+    const gridEndX = Math.ceil((extendedWidth / 2 - panOffset.x / zoomScale) / gridSize) * gridSize;
+    const gridStartY = Math.floor((-extendedHeight / 2 - panOffset.y / zoomScale) / gridSize) * gridSize;
+    const gridEndY = Math.ceil((extendedHeight / 2 - panOffset.y / zoomScale) / gridSize) * gridSize;
     
     // Draw vertical grid lines
     for (let x = gridStartX; x <= gridEndX; x += gridSize) {
@@ -84,13 +90,20 @@ export default function MapCanvas({
     ctx.textAlign = 'center';
     ctx.fillText('Lifeboat 5', 0, -15);
 
-    // Draw POIs
+    ctx.restore();
+
+    // Draw POIs in screen coordinates (after restore to avoid scaling)
     pois.forEach(poi => {
+      // Transform world coordinates to screen coordinates
+      // This should match the canvas transformation: translate(width/2 + panOffset.x, height/2 + panOffset.y) then scale(zoomScale)
+      const screenX = (poi.x * zoomScale) + (width / 2 + panOffset.x);
+      const screenY = (poi.y * zoomScale) + (height / 2 + panOffset.y);
+      
       ctx.fillStyle = '#f39c12'; // Orange for POIs
       ctx.strokeStyle = '#e67e22';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.arc(poi.x, poi.y, 6, 0, 2 * Math.PI);
+      ctx.arc(screenX, screenY, 6, 0, 2 * Math.PI);
       ctx.fill();
       ctx.stroke();
 
@@ -98,11 +111,49 @@ export default function MapCanvas({
       ctx.fillStyle = '#2c3e50';
       ctx.font = '10px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText(poi.name, poi.x, poi.y - 10);
+      ctx.fillText(poi.name, screenX, screenY - 10);
     });
+  }, [width, height, pois, panOffset, zoomScale]);
 
-    ctx.restore();
-  }, [width, height, pois, panOffset]);
+  // Separate useEffect for wheel event listener to fix passive event warnings
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const handleWheelEvent = (event: WheelEvent) => {
+      event.preventDefault();
+      
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+
+      // Calculate zoom factor (negative deltaY = zoom in, positive = zoom out)
+      const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
+      const newZoomScale = Math.max(minZoom, Math.min(maxZoom, zoomScale * zoomFactor));
+      
+      if (newZoomScale !== zoomScale) {
+        // Calculate zoom-to-cursor offset adjustment
+        // Convert mouse position to world coordinates before zoom
+        const worldMouseX = (mouseX - width / 2 - panOffset.x) / zoomScale;
+        const worldMouseY = (mouseY - height / 2 - panOffset.y) / zoomScale;
+        
+        // Calculate new pan offset to keep world point under cursor
+        const newPanOffset = {
+          x: mouseX - width / 2 - worldMouseX * newZoomScale,
+          y: mouseY - height / 2 - worldMouseY * newZoomScale
+        };
+        
+        setZoomScale(newZoomScale);
+        setPanOffset(newPanOffset);
+      }
+    };
+
+    canvas.addEventListener('wheel', handleWheelEvent, { passive: false });
+
+    return () => {
+      canvas.removeEventListener('wheel', handleWheelEvent);
+    };
+  }, [zoomScale, panOffset, width, height, minZoom, maxZoom]);
 
   const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
     // Don't add POI if we were dragging
@@ -113,8 +164,8 @@ export default function MapCanvas({
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left - width / 2 - panOffset.x; // Convert to canvas coordinates with pan offset
-    const y = event.clientY - rect.top - height / 2 - panOffset.y;
+    const x = (event.clientX - rect.left - width / 2 - panOffset.x) / zoomScale; // Convert to canvas coordinates with pan offset and zoom
+    const y = (event.clientY - rect.top - height / 2 - panOffset.y) / zoomScale;
 
     const newPOI: POI = {
       id: `poi-${Date.now()}`,
@@ -136,14 +187,14 @@ export default function MapCanvas({
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left - width / 2 - panOffset.x;
-    const y = event.clientY - rect.top - height / 2 - panOffset.y;
+    const x = (event.clientX - rect.left - width / 2 - panOffset.x) / zoomScale;
+    const y = (event.clientY - rect.top - height / 2 - panOffset.y) / zoomScale;
 
     // Handle right-click for deletion
     if (event.button === 2) {
       const clickedPOI = pois.find(poi => {
         const distance = Math.sqrt((poi.x - x) ** 2 + (poi.y - y) ** 2);
-        return distance <= 10; // 10px tolerance for clicking on POI
+        return distance <= 10 / zoomScale; // Scale tolerance with zoom level
       });
 
       if (clickedPOI) {
@@ -176,6 +227,7 @@ export default function MapCanvas({
   const handleMouseUp = () => {
     setIsDragging(false);
   };
+
 
   const handleContextMenu = (event: React.MouseEvent<HTMLCanvasElement>) => {
     event.preventDefault(); // Prevent browser context menu
