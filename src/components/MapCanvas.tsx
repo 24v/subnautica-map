@@ -6,13 +6,15 @@ interface MapCanvasProps {
   height?: number;
   className?: string;
   onPOIAdd?: (poi: POI) => void;
+  onResetView?: () => void;
 }
 
 export default function MapCanvas({ 
   width = 800, 
   height = 600, 
   className = '',
-  onPOIAdd
+  onPOIAdd,
+  onResetView
 }: MapCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [pois, setPois] = useState<POI[]>([]);
@@ -26,6 +28,13 @@ export default function MapCanvas({
   const [zoomScale, setZoomScale] = useState(1);
   const minZoom = 0.1;
   const maxZoom = 5;
+
+  // Reset view function
+  const resetView = () => {
+    setPanOffset({ x: 0, y: 0 });
+    setZoomScale(1);
+    onResetView?.();
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -234,20 +243,29 @@ export default function MapCanvas({
   };
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={width}
-      height={height}
-      className={`border border-gray-300 ${className}`}
-      style={{ 
-        backgroundColor: '#1e3a8a', // Deep ocean blue background
-        cursor: 'crosshair'
-      }}
-      onClick={handleCanvasClick}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onContextMenu={handleContextMenu}
-    />
+    <div className="canvas-container">
+      <canvas
+        ref={canvasRef}
+        width={width}
+        height={height}
+        className={`border border-gray-300 ${className}`}
+        style={{ 
+          backgroundColor: '#1e3a8a', // Deep ocean blue background
+          cursor: 'crosshair'
+        }}
+        onClick={handleCanvasClick}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onContextMenu={handleContextMenu}
+      />
+      <button 
+        className="reset-view-btn"
+        onClick={resetView}
+        title="Reset view to origin"
+      >
+        Reset View
+      </button>
+    </div>
   );
 }
