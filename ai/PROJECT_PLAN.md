@@ -7,9 +7,11 @@
 - [x] Display POIs as colored dots on canvas
 - [x] Delete POI with right-click
 
-## Phase 2: Map Interaction
-- [ ] Pan map with mouse drag
-- [ ] Zoom in/out with mouse wheel
+## Phase 2: Map Interaction ✅
+- [x] Pan map with mouse drag
+- [x] Zoom in/out with mouse wheel
+- [x] Responsive canvas that fills viewport
+- [x] Styled Subnautica-themed UI
 - [ ] Reset view button
 - [ ] Show current coordinates on hover
 
