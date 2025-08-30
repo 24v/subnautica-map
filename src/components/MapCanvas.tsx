@@ -16,6 +16,11 @@ export default function MapCanvas({
 }: MapCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [pois, setPois] = useState<POI[]>([]);
+  
+  // Pan state management
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -27,27 +32,40 @@ export default function MapCanvas({
     // Clear canvas
     ctx.clearRect(0, 0, width, height);
 
-    // Set up coordinate system with origin at center
+    // Set up coordinate system with origin at center + pan offset
     ctx.save();
-    ctx.translate(width / 2, height / 2);
+    ctx.translate(width / 2 + panOffset.x, height / 2 + panOffset.y);
 
     // Draw coordinate grid (light blue, ocean-like)
     ctx.strokeStyle = 'rgba(69, 183, 209, 0.2)';
     ctx.lineWidth = 1;
 
-    // Draw grid lines
+    // Draw infinite grid lines that extend beyond viewport when panned
     const gridSize = 50;
-    for (let x = -width / 2; x <= width / 2; x += gridSize) {
+    
+    // Calculate extended bounds to cover panned area
+    const extendedWidth = width + Math.abs(panOffset.x) * 2;
+    const extendedHeight = height + Math.abs(panOffset.y) * 2;
+    
+    // Calculate grid start positions to align with grid
+    const gridStartX = Math.floor((-extendedWidth / 2 - panOffset.x) / gridSize) * gridSize;
+    const gridEndX = Math.ceil((extendedWidth / 2 - panOffset.x) / gridSize) * gridSize;
+    const gridStartY = Math.floor((-extendedHeight / 2 - panOffset.y) / gridSize) * gridSize;
+    const gridEndY = Math.ceil((extendedHeight / 2 - panOffset.y) / gridSize) * gridSize;
+    
+    // Draw vertical grid lines
+    for (let x = gridStartX; x <= gridEndX; x += gridSize) {
       ctx.beginPath();
-      ctx.moveTo(x, -height / 2);
-      ctx.lineTo(x, height / 2);
+      ctx.moveTo(x, gridStartY);
+      ctx.lineTo(x, gridEndY);
       ctx.stroke();
     }
 
-    for (let y = -height / 2; y <= height / 2; y += gridSize) {
+    // Draw horizontal grid lines
+    for (let y = gridStartY; y <= gridEndY; y += gridSize) {
       ctx.beginPath();
-      ctx.moveTo(-width / 2, y);
-      ctx.lineTo(width / 2, y);
+      ctx.moveTo(gridStartX, y);
+      ctx.lineTo(gridEndX, y);
       ctx.stroke();
     }
 
@@ -84,16 +102,19 @@ export default function MapCanvas({
     });
 
     ctx.restore();
-  }, [width, height, pois]);
+  }, [width, height, pois, panOffset]);
 
   const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    // Don't add POI if we were dragging
+    if (isDragging) return;
+    
     // Only handle left-clicks for adding POIs
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left - width / 2; // Convert to canvas coordinates
-    const y = event.clientY - rect.top - height / 2;
+    const x = event.clientX - rect.left - width / 2 - panOffset.x; // Convert to canvas coordinates with pan offset
+    const y = event.clientY - rect.top - height / 2 - panOffset.y;
 
     const newPOI: POI = {
       id: `poi-${Date.now()}`,
@@ -111,15 +132,15 @@ export default function MapCanvas({
   };
 
   const handleMouseDown = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left - width / 2 - panOffset.x;
+    const y = event.clientY - rect.top - height / 2 - panOffset.y;
+
     // Handle right-click for deletion
     if (event.button === 2) {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-
-      const rect = canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left - width / 2;
-      const y = event.clientY - rect.top - height / 2;
-
       const clickedPOI = pois.find(poi => {
         const distance = Math.sqrt((poi.x - x) ** 2 + (poi.y - y) ** 2);
         return distance <= 10; // 10px tolerance for clicking on POI
@@ -128,7 +149,32 @@ export default function MapCanvas({
       if (clickedPOI) {
         setPois(prev => prev.filter(poi => poi.id !== clickedPOI.id));
       }
+      return;
     }
+
+    // Handle left-click for dragging
+    if (event.button === 0) {
+      setIsDragging(true);
+      setDragStart({
+        x: event.clientX - panOffset.x,
+        y: event.clientY - panOffset.y
+      });
+    }
+  };
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!isDragging) return;
+
+    const newPanOffset = {
+      x: event.clientX - dragStart.x,
+      y: event.clientY - dragStart.y
+    };
+    
+    setPanOffset(newPanOffset);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
   };
 
   const handleContextMenu = (event: React.MouseEvent<HTMLCanvasElement>) => {
@@ -147,6 +193,8 @@ export default function MapCanvas({
       }}
       onClick={handleCanvasClick}
       onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
       onContextMenu={handleContextMenu}
     />
   );
