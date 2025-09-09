@@ -98,6 +98,9 @@ The biggest risks to quality and project momentum come from **large, unfocused c
 3. **Implement Incrementally**  
    - Break work into small, self-contained patches.  
    - Avoid bundling unrelated changes into a single patch.
+4. **Test**
+   - Nearly every change should have a corresponding test or test update.
+   - Ensure all tests pass before deciding the task is complete.
 
 ### General Principles
 - ** Follow the Rules **

@@ -281,6 +281,7 @@ src/
   "build": "tsc && vite build",
   "preview": "vite preview",
   "test": "vitest",
+  "test:run": "vitest run",
   "test:watch": "vitest --watch",
   "test:coverage": "vitest --coverage",
   "lint": "eslint src --ext ts,tsx",

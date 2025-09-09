@@ -53,8 +53,8 @@ export default function MapCanvas({
     ctx.translate(width / 2 + panOffset.x, height / 2 + panOffset.y);
     ctx.scale(zoomScale, zoomScale);
 
-    // Draw coordinate grid (light blue, ocean-like)
-    ctx.strokeStyle = 'rgba(69, 183, 209, 0.2)';
+    // Draw coordinate grid (cyan theme to match old version)
+    ctx.strokeStyle = '#374151';
     ctx.lineWidth = 1;
 
     // Draw infinite grid lines that extend beyond viewport when panned
@@ -87,8 +87,8 @@ export default function MapCanvas({
     }
 
     // Draw origin point (Lifeboat 5)
-    ctx.fillStyle = '#f9ca24';
-    ctx.strokeStyle = '#f39c12';
+    ctx.fillStyle = '#10b981';
+    ctx.strokeStyle = '#06b6d4';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.arc(0, 0, 8, 0, 2 * Math.PI);
@@ -96,8 +96,8 @@ export default function MapCanvas({
     ctx.stroke();
 
     // Label origin
-    ctx.fillStyle = '#2c3e50';
-    ctx.font = '12px Arial';
+    ctx.fillStyle = '#22d3ee';
+    ctx.font = '12px monospace';
     ctx.textAlign = 'center';
     ctx.fillText('Lifeboat 5', 0, -15);
 
@@ -110,8 +110,8 @@ export default function MapCanvas({
       const screenX = (poi.x * zoomScale) + (width / 2 + panOffset.x);
       const screenY = (poi.y * zoomScale) + (height / 2 + panOffset.y);
       
-      ctx.fillStyle = '#f39c12'; // Orange for POIs
-      ctx.strokeStyle = '#e67e22';
+      ctx.fillStyle = '#f59e0b'; // Orange for POIs (matching old version)
+      ctx.strokeStyle = '#06b6d4';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(screenX, screenY, 6, 0, 2 * Math.PI);
@@ -119,8 +119,8 @@ export default function MapCanvas({
       ctx.stroke();
 
       // Label POI
-      ctx.fillStyle = '#2c3e50';
-      ctx.font = '10px Arial';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '10px monospace';
       ctx.textAlign = 'center';
       ctx.fillText(poi.name, screenX, screenY - 10);
     });
@@ -167,7 +167,7 @@ export default function MapCanvas({
   }, [zoomScale, panOffset, width, height, minZoom, maxZoom]);
 
   const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    // Don't add POI if we were dragging
+    // Don't process clicks if we were dragging
     if (isDragging) return;
     
     const canvas = canvasRef.current;
@@ -177,7 +177,7 @@ export default function MapCanvas({
     const x = (event.clientX - rect.left - width / 2 - panOffset.x) / zoomScale;
     const y = (event.clientY - rect.top - height / 2 - panOffset.y) / zoomScale;
 
-    // Check if we clicked on an existing POI first
+    // Check if we clicked on an existing POI to show details
     const clickedPOI = pois.find(poi => {
       const distance = Math.sqrt((poi.x - x) ** 2 + (poi.y - y) ** 2);
       return distance <= 10 / zoomScale; // Scale tolerance with zoom level
@@ -186,23 +186,8 @@ export default function MapCanvas({
     if (clickedPOI) {
       // Show POI details in sidebar
       setSelectedPOI(clickedPOI);
-      return;
     }
-
-    // If no POI was clicked, add a new POI
-    const newPOI: POI = {
-      id: `poi-${Date.now()}`,
-      name: `POI ${pois.length + 1}`,
-      type: 'landmark' as POIType,
-      x,
-      y,
-      notes: 'Click to edit',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-
-    setPois(prev => [...prev, newPOI]);
-    onPOIAdd?.(newPOI);
+    // Left-click on empty space does nothing (read-only)
   };
 
   const handleMouseDown = (event: React.MouseEvent<HTMLCanvasElement>) => {
@@ -213,15 +198,29 @@ export default function MapCanvas({
     const x = (event.clientX - rect.left - width / 2 - panOffset.x) / zoomScale;
     const y = (event.clientY - rect.top - height / 2 - panOffset.y) / zoomScale;
 
-    // Handle right-click for deletion
+    // Handle right-click for POI creation
     if (event.button === 2) {
+      // Check if we right-clicked on an existing POI (don't create new one)
       const clickedPOI = pois.find(poi => {
         const distance = Math.sqrt((poi.x - x) ** 2 + (poi.y - y) ** 2);
         return distance <= 10 / zoomScale; // Scale tolerance with zoom level
       });
 
-      if (clickedPOI) {
-        setPois(prev => prev.filter(poi => poi.id !== clickedPOI.id));
+      if (!clickedPOI) {
+        // Create new POI only if we didn't click on an existing one
+        const newPOI: POI = {
+          id: `poi-${Date.now()}`,
+          name: `POI ${pois.length + 1}`,
+          type: 'landmark' as POIType,
+          x,
+          y,
+          notes: 'Click to edit',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+
+        setPois(prev => [...prev, newPOI]);
+        onPOIAdd?.(newPOI);
       }
       return;
     }
@@ -273,7 +272,7 @@ export default function MapCanvas({
           height={height}
           className={`border border-gray-300 ${className}`}
           style={{ 
-            backgroundColor: '#1e3a8a', // Deep ocean blue background
+            backgroundColor: '#0f172a', // Dark slate background to match old version
             cursor: 'crosshair'
           }}
           onClick={handleCanvasClick}
