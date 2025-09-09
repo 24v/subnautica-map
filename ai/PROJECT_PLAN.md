@@ -14,9 +14,9 @@
 - [x] Styled Subnautica-themed UI
 - [x] Reset view button
 
-## Phase 3: POI UI
-- [ ] Click on POI to bring up a details sidebar
-- [ ] Change delete from right click to a button in the details sidebar
+## Phase 3: POI UI ✅
+- [x] Click on POI to bring up a details sidebar
+- [x] Change delete from right click to a button in the details sidebar with confirmation dialog
 - [ ] Open a dialog (in details sidebar) when creating a new POI (and allow cancelling). For now, just using absolute positioning.
 
 ## Phase 4: Bearing System

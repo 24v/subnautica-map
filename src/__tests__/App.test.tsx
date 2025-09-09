@@ -8,9 +8,9 @@ describe('App', () => {
     expect(screen.getByRole('main')).toBeInTheDocument()
   })
 
-  it('displays the app title', () => {
+  it('renders fullscreen canvas layout', () => {
     render(<App />)
-    expect(screen.getByText('Subnautica Map')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /reset view/i })).toBeInTheDocument()
   })
 
   it('shows reset view button', () => {

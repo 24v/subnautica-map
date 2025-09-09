@@ -1,4 +1,5 @@
 import { POI, POI_METADATA } from '../types/poi';
+import { useState } from 'react';
 
 interface POIDetailsSidebarProps {
   poi: POI | null;
@@ -11,15 +12,30 @@ export default function POIDetailsSidebar({
   onClose, 
   onDelete 
 }: POIDetailsSidebarProps) {
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  
   if (!poi) return null;
 
   const metadata = POI_METADATA[poi.type];
 
-  const handleDelete = () => {
-    if (onDelete && confirm(`Delete POI "${poi.name}"?`)) {
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!onDelete) return;
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (onDelete) {
       onDelete(poi.id);
       onClose();
     }
+    setShowConfirmDialog(false);
+  };
+
+  const handleCancelDelete = () => {
+    setShowConfirmDialog(false);
   };
 
   return (
@@ -78,12 +94,36 @@ export default function POIDetailsSidebar({
       <div className="sidebar-actions">
         <button 
           className="delete-btn"
-          onClick={handleDelete}
+          onClick={handleDeleteClick}
           title="Delete this POI"
         >
           🗑️ Delete POI
         </button>
       </div>
+
+      {showConfirmDialog && (
+        <div className="confirm-dialog-overlay">
+          <div className="confirm-dialog">
+            <h3>Confirm Delete</h3>
+            <p>Delete POI "{poi.name}"?</p>
+            <p>This action cannot be undone.</p>
+            <div className="confirm-dialog-actions">
+              <button 
+                className="confirm-btn"
+                onClick={handleConfirmDelete}
+              >
+                Delete
+              </button>
+              <button 
+                className="cancel-btn"
+                onClick={handleCancelDelete}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -51,12 +51,9 @@ describe('POIDetailsSidebar', () => {
     expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
-  it('calls onDelete when delete button is clicked and confirmed', () => {
+  it('calls onDelete when delete button is clicked and confirmed', async () => {
     const mockOnClose = vi.fn();
     const mockOnDelete = vi.fn();
-    
-    // Mock window.confirm to return true
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
 
     render(
       <POIDetailsSidebar 
@@ -66,14 +63,15 @@ describe('POIDetailsSidebar', () => {
       />
     );
 
-    const deleteButton = screen.getByText('🗑️ Delete POI');
+    const deleteButton = screen.getByRole('button', { name: /delete poi/i });
     fireEvent.click(deleteButton);
 
-    expect(confirmSpy).toHaveBeenCalledWith('Delete POI "Test POI"?');
+    // Click delete button in confirmation dialog
+    const confirmDeleteButton = screen.getByText('Delete');
+    fireEvent.click(confirmDeleteButton);
+
     expect(mockOnDelete).toHaveBeenCalledWith('test-poi-1');
     expect(mockOnClose).toHaveBeenCalled();
-    
-    confirmSpy.mockRestore();
   });
 
   it('formats coordinates correctly', () => {

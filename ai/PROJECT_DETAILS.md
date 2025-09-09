@@ -357,11 +357,20 @@ src/
 - Auto-generated POI names and IDs
 - State management with React hooks
 - Optional callback prop for POI creation events
+- POI Details Sidebar with view/edit/delete functionality
+- Custom confirmation dialog for delete operations (80s terminal theme)
+
+**UI Theme**:
+- 80s Linux terminal aesthetic with fluorescent green (#00ff00) accents
+- Pure black sidebar background for authentic terminal feel
+- Dark green canvas background (#0a0f0a) for ocean immersion
+- Custom modal dialogs matching terminal theme
+- Fullscreen canvas layout for maximum immersion
 
 ---
 
 ## AI Development Notes
 *This section is maintained by the AI during development*
 
-**Last Updated**: 2025-08-27
-**Updated By**: AI (Phase 1 Steps 1-4 Complete)
+**Last Updated**: 2025-09-09
+**Updated By**: AI (POI CRUD functionality with delete confirmation dialog complete)
