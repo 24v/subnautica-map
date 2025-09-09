@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { POI, POI_METADATA, POIType } from '../types/poi';
+import { POI, POI_METADATA } from '../types/poi';
 import POIDetailsSidebar from './POIDetailsSidebar';
 
 interface MapCanvasProps {
@@ -20,6 +20,8 @@ export default function MapCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [pois, setPois] = useState<POI[]>([]);
   const [selectedPOI, setSelectedPOI] = useState<POI | null>(null);
+  const [isAddingPOI, setIsAddingPOI] = useState(false);
+  const [newPOICoordinates, setNewPOICoordinates] = useState<{x: number, y: number} | null>(null);
   
   // Pan state management
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
@@ -125,7 +127,37 @@ export default function MapCanvas({
       ctx.textAlign = 'center';
       ctx.fillText(poi.name, screenX, screenY - 15);
     });
-  }, [width, height, pois, panOffset, zoomScale]);
+
+    // Draw temporary POI when in ADD mode
+    if (isAddingPOI && newPOICoordinates) {
+      const screenX = (newPOICoordinates.x * zoomScale) + (width / 2 + panOffset.x);
+      const screenY = (newPOICoordinates.y * zoomScale) + (height / 2 + panOffset.y);
+      
+      // Draw temporary POI with semi-transparent styling
+      ctx.globalAlpha = 0.6;
+      ctx.font = '16px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('🎯', screenX, screenY + 5); // Default landmark emoji
+
+      // Draw dashed circle around temporary POI
+      ctx.strokeStyle = '#00ff00';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.beginPath();
+      ctx.arc(screenX, screenY, 20, 0, 2 * Math.PI);
+      ctx.stroke();
+      ctx.setLineDash([]); // Reset line dash
+
+      // Label temporary POI
+      ctx.fillStyle = '#00ff00';
+      ctx.font = '12px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('New POI - Edit in sidebar', screenX, screenY - 25);
+      
+      ctx.globalAlpha = 1.0; // Reset alpha
+    }
+
+  }, [width, height, pois, panOffset, zoomScale, isAddingPOI, newPOICoordinates]);
 
   // Separate useEffect for wheel event listener to fix passive event warnings
   useEffect(() => {
@@ -168,15 +200,18 @@ export default function MapCanvas({
   }, [zoomScale, panOffset, width, height, minZoom, maxZoom]);
 
   const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    // Don't process clicks if we were dragging
-    if (isDragging) return;
-    
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
     const x = (event.clientX - rect.left - width / 2 - panOffset.x) / zoomScale;
     const y = (event.clientY - rect.top - height / 2 - panOffset.y) / zoomScale;
+
+    // If there's a provisional POI, cancel it on any left click
+    if (newPOICoordinates) {
+      setNewPOICoordinates(null);
+      return;
+    }
 
     // Check if we clicked on an existing POI to show details
     const clickedPOI = pois.find(poi => {
@@ -208,31 +243,40 @@ export default function MapCanvas({
       });
 
       if (!clickedPOI) {
-        // Create new POI only if we didn't click on an existing one
-        const newPOI: POI = {
-          id: `poi-${Date.now()}`,
-          name: `POI ${pois.length + 1}`,
-          type: 'landmark' as POIType,
-          x,
-          y,
-          notes: 'Click to edit',
-          createdAt: new Date(),
-          updatedAt: new Date()
-        };
-
-        setPois(prev => [...prev, newPOI]);
-        onPOIAdd?.(newPOI);
+        // Open ADD sidebar with coordinates for new POI
+        setNewPOICoordinates({ x, y });
+        setIsAddingPOI(true);
+        setSelectedPOI(null); // Clear any selected POI
       }
       return;
     }
 
-    // Handle left-click for dragging
+    // Handle left-click for POI selection and dragging
     if (event.button === 0) {
-      setIsDragging(true);
-      setDragStart({
-        x: event.clientX - panOffset.x,
-        y: event.clientY - panOffset.y
+      // Close ADD sidebar if open
+      if (isAddingPOI) {
+        setIsAddingPOI(false);
+        setNewPOICoordinates(null);
+        return;
+      }
+
+      // Check if we clicked on an existing POI
+      const clickedPOI = pois.find(poi => {
+        const distance = Math.sqrt((poi.x - x) ** 2 + (poi.y - y) ** 2);
+        return distance <= 10 / zoomScale; // Scale tolerance with zoom level
       });
+
+      if (clickedPOI) {
+        setSelectedPOI(clickedPOI);
+      } else {
+        setSelectedPOI(null);
+        // Start dragging if not clicking on a POI
+        setIsDragging(true);
+        setDragStart({
+          x: event.clientX - panOffset.x,
+          y: event.clientY - panOffset.y
+        });
+      }
     }
   };
 
@@ -251,10 +295,22 @@ export default function MapCanvas({
     setIsDragging(false);
   };
 
-
   const handleContextMenu = (event: React.MouseEvent<HTMLCanvasElement>) => {
     event.preventDefault(); // Prevent browser context menu
   };
+
+  // Handle escape key to cancel ADD mode
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isAddingPOI) {
+        setIsAddingPOI(false);
+        setNewPOICoordinates(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isAddingPOI]);
 
   const handlePOIDelete = (poiId: string) => {
     setPois(prev => prev.filter(poi => poi.id !== poiId));
@@ -265,8 +321,29 @@ export default function MapCanvas({
     setSelectedPOI(updatedPOI); // Update the selected POI to reflect changes
   };
 
+  const handlePOISave = (newPOI: POI) => {
+    // Add coordinates from newPOICoordinates if this is a new POI
+    if (isAddingPOI && newPOICoordinates) {
+      const poiWithCoords = {
+        ...newPOI,
+        x: newPOICoordinates.x,
+        y: newPOICoordinates.y
+      };
+      setPois(prev => [...prev, poiWithCoords]);
+      setIsAddingPOI(false);
+      setNewPOICoordinates(null);
+      setSelectedPOI(null); // Close sidebar after saving
+      onPOIAdd?.(poiWithCoords);
+    }
+  };
+
   const handleSidebarClose = () => {
     setSelectedPOI(null);
+    // If closing sidebar in ADD mode, cancel it
+    if (isAddingPOI) {
+      setIsAddingPOI(false);
+      setNewPOICoordinates(null);
+    }
   };
 
   return (
@@ -296,12 +373,17 @@ export default function MapCanvas({
         </button>
       </div>
       
-      <POIDetailsSidebar 
-        poi={selectedPOI}
-        onClose={handleSidebarClose}
-        onDelete={handlePOIDelete}
-        onUpdate={handlePOIUpdate}
-      />
+      {(selectedPOI || isAddingPOI) && (
+        <POIDetailsSidebar 
+          poi={selectedPOI}
+          onClose={handleSidebarClose}
+          onDelete={handlePOIDelete}
+          onUpdate={handlePOIUpdate}
+          onSave={handlePOISave}
+          isProvisional={isAddingPOI}
+          coordinates={newPOICoordinates}
+        />
+      )}
     </>
   );
 }

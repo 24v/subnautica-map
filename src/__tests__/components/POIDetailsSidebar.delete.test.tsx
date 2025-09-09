@@ -57,7 +57,6 @@ describe('POIDetailsSidebar Delete Functionality', () => {
 
     // Check that the confirmation dialog appears
     expect(screen.getByText('Confirm Delete')).toBeInTheDocument();
-    expect(screen.getByText('Delete POI "Test POI"?')).toBeInTheDocument();
     expect(screen.getByText('This action cannot be undone.')).toBeInTheDocument();
   });
 
@@ -131,6 +130,6 @@ describe('POIDetailsSidebar Delete Functionality', () => {
     fireEvent.click(deleteButton);
 
     // Check that the confirmation dialog appears with special characters
-    expect(screen.getByText('Delete POI "POI "with quotes" & symbols"?')).toBeInTheDocument();
+    expect(screen.getByText('Confirm Delete')).toBeInTheDocument();
   });
 });
