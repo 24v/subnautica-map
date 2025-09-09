@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import { POI, POIType } from '../types/poi';
+import POIDetailsSidebar from './POIDetailsSidebar';
 
 interface MapCanvasProps {
   width?: number;
@@ -18,6 +19,7 @@ export default function MapCanvas({
 }: MapCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [pois, setPois] = useState<POI[]>([]);
+  const [selectedPOI, setSelectedPOI] = useState<POI | null>(null);
   
   // Pan state management
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
@@ -168,14 +170,26 @@ export default function MapCanvas({
     // Don't add POI if we were dragging
     if (isDragging) return;
     
-    // Only handle left-clicks for adding POIs
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = (event.clientX - rect.left - width / 2 - panOffset.x) / zoomScale; // Convert to canvas coordinates with pan offset and zoom
+    const x = (event.clientX - rect.left - width / 2 - panOffset.x) / zoomScale;
     const y = (event.clientY - rect.top - height / 2 - panOffset.y) / zoomScale;
 
+    // Check if we clicked on an existing POI first
+    const clickedPOI = pois.find(poi => {
+      const distance = Math.sqrt((poi.x - x) ** 2 + (poi.y - y) ** 2);
+      return distance <= 10 / zoomScale; // Scale tolerance with zoom level
+    });
+
+    if (clickedPOI) {
+      // Show POI details in sidebar
+      setSelectedPOI(clickedPOI);
+      return;
+    }
+
+    // If no POI was clicked, add a new POI
     const newPOI: POI = {
       id: `poi-${Date.now()}`,
       name: `POI ${pois.length + 1}`,
@@ -242,30 +256,46 @@ export default function MapCanvas({
     event.preventDefault(); // Prevent browser context menu
   };
 
+  const handlePOIDelete = (poiId: string) => {
+    setPois(prev => prev.filter(poi => poi.id !== poiId));
+  };
+
+  const handleSidebarClose = () => {
+    setSelectedPOI(null);
+  };
+
   return (
-    <div className="canvas-container">
-      <canvas
-        ref={canvasRef}
-        width={width}
-        height={height}
-        className={`border border-gray-300 ${className}`}
-        style={{ 
-          backgroundColor: '#1e3a8a', // Deep ocean blue background
-          cursor: 'crosshair'
-        }}
-        onClick={handleCanvasClick}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onContextMenu={handleContextMenu}
+    <>
+      <div className="canvas-container">
+        <canvas
+          ref={canvasRef}
+          width={width}
+          height={height}
+          className={`border border-gray-300 ${className}`}
+          style={{ 
+            backgroundColor: '#1e3a8a', // Deep ocean blue background
+            cursor: 'crosshair'
+          }}
+          onClick={handleCanvasClick}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onContextMenu={handleContextMenu}
+        />
+        <button 
+          className="reset-view-btn"
+          onClick={resetView}
+          title="Reset view to origin"
+        >
+          Reset View
+        </button>
+      </div>
+      
+      <POIDetailsSidebar 
+        poi={selectedPOI}
+        onClose={handleSidebarClose}
+        onDelete={handlePOIDelete}
       />
-      <button 
-        className="reset-view-btn"
-        onClick={resetView}
-        title="Reset view to origin"
-      >
-        Reset View
-      </button>
-    </div>
+    </>
   );
 }

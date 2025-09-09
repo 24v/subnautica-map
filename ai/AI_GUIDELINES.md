@@ -89,6 +89,7 @@ The biggest risks to quality and project momentum come from **large, unfocused c
 ### For New Features or Major Changes
 1. **Plan First**  
    - Draft or update the relevant task in `PROJECT_PLAN.md`.  
+   - If tasks in the plan are too coarse, first propose substeps.
    - Update architecture notes in `PROJECT_DETAILS.md`.  
    - If the change impacts core structure, create or update an ADR (Architecture Decision Record) under `/ai/ADRS/`.  
 2. **Confirm Direction**  
@@ -132,6 +133,9 @@ The biggest risks to quality and project momentum come from **large, unfocused c
     - Switching from pnpm to npm without PROJECT_DETAILS.md update
     - Dropping real API integration to create mocks without approval
     - Using different libraries than specified without PROJECT_DETAILS.md update
+
+## UX
+- Document user stories in the PROJECT_DETAILS.md as they are created, discovered, updated, or removed.
 
 # Initialization Function
 These are guidelines around how to do project initialization.
