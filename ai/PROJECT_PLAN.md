@@ -13,15 +13,19 @@
 - [x] Responsive canvas that fills viewport
 - [x] Styled Subnautica-themed UI
 - [x] Reset view button
-- [ ] Show current coordinates on hover
 
-## Phase 3: Bearing System
+## Phase 3: POI UI
+- [ ] Click on POI to bring up a details sidebar
+- [ ] Change delete from right click to a button in the details sidebar
+- [ ] Open a dialog (in details sidebar) when creating a new POI (and allow cancelling). For now, just using absolute positioning.
+
+## Phase 4: Bearing System
 - [ ] Add bearing input form (compass direction + distance)
 - [ ] Calculate POI coordinates from bearing + reference point
 - [ ] Show bearing lines on map
 - [ ] Support multiple bearings for triangulation
 
-## Phase 4: POI Management
+## Phase 5: POI Management
 - [ ] Edit POI name and notes
 - [ ] Filter POIs by type (wreck, resource, biome, etc.)
 - [ ] Search POIs by name
@@ -30,7 +34,7 @@
 - [ ] Export POI list as JSON
 - [ ] Import POI list from JSON
 
-## Phase 5: UI Polish (After Core Features Work)
+## Phase 6: UI Polish (After Core Features Work)
 - [ ] Subnautica-themed colors (blue/teal/orange)
 - [ ] Custom POI icons by type
 - [ ] Smooth animations for interactions

@@ -4,8 +4,6 @@ This file is the **authoritative starting point** for any AI session on this rep
 
 - It tells you (the AI) what to read, in what order, how to behave, and how to acknowledge the context you loaded. 
 
-When the user says use the AI_GUIDELINES.md for the repo, do the following:
-
 ### General Context
 - Read and understand AI_GUIDELINES.md (this file)
 - Read and understand PROJECT_DETAILS.md
@@ -101,10 +99,11 @@ The biggest risks to quality and project momentum come from **large, unfocused c
    - Avoid bundling unrelated changes into a single patch.
 
 ### General Principles
-- DO NOT give up on doing it the correct way and just make stuff up. 
+- ** Follow the Rules **
+   - DO NOT give up on doing it the correct way and just make stuff up. 
    - Like one time you couldnt get something to work so you decided to just drop the real API integration and to create mocks. That is NOT what I want.
-   - Or one time you were supposed to use pnpm but it wasnt installed so you went off the rails.
-- The PROJECT_DETAILS.md is the LAW. If something doesnt work or isnt working out then we need to work together to update that FIRST, then change our approach.
+   - Or one time you were supposed to use pnpm but it wasnt installed so you went off the rails. This is NOT the correct behaviour.
+   - The PROJECT_DETAILS.md is the LAW. If something doesnt work or isnt working out then we need to work together to update that FIRST, then change our approach.
 - **Iterative**  
   - Work in short cycles with review between steps.  
   - Aim for patches ≤ 150 LoC unless explicitly approved otherwise.
