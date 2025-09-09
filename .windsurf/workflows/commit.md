@@ -8,7 +8,10 @@ These are guidelines for creating commits on the repo.
 
 **Purpose**: Handle git commits with high-quality, informative commit messages.
 
-1. EVERY TIME THIS COMMAND IS INVOKED - First read the ai/AI_GUIDELINES.md file to control your behaviour.
+1. **MANDATORY FIRST STEP**: ALWAYS read ai/AI_GUIDELINES.md file first before any other action
+   - Use Read tool on /Users/demo/dev/personal/subnautica/subnautica-map/ai/AI_GUIDELINES.md
+   - Acknowledge that guidelines have been loaded with ✅ checkmark
+   - This step CANNOT be skipped or automated - must be done manually every time
 
 2. **Analyze Changes**:
    - Review all modified, added, and deleted files

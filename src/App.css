@@ -72,8 +72,8 @@ body {
   width: 300px;
   height: 100vh;
   background-color: #000000;
-  border-left: 2px solid #00ff00;
-  z-index: 1000;
+  border: 2px solid #00ff00;
+  z-index: 2000;
   display: flex;
   flex-direction: column;
   color: #00ff00;
@@ -275,4 +275,60 @@ body {
 .cancel-btn:hover {
   background-color: #00ff00;
   color: #000000;
+}
+
+/* Edit form styles */
+.edit-input,
+.edit-select,
+.edit-textarea {
+  width: 100%;
+  background-color: #111;
+  color: #00ff00;
+  border: 1px solid #333;
+  padding: 8px;
+  font-family: monospace;
+  font-size: 12px;
+  border-radius: 3px;
+}
+
+.edit-input:focus,
+.edit-select:focus,
+.edit-textarea:focus {
+  outline: none;
+  border-color: #00ff00;
+  box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+}
+
+.edit-textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.action-buttons-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.save-btn,
+.edit-btn,
+.delete-btn {
+  background-color: #003300;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  padding: 8px 12px;
+  margin: 0;
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 12px;
+  border-radius: 3px;
+  transition: all 0.2s;
+  flex: 1;
+}
+
+.save-btn:hover,
+.edit-btn:hover,
+.delete-btn:hover {
+  background-color: #004400;
+  box-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
 }

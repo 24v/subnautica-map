@@ -86,12 +86,17 @@ export default function MapCanvas({
       ctx.stroke();
     }
 
-    // Draw origin point (Lifeboat 5)
+    ctx.restore();
+
+    // Draw origin point (Lifeboat 5) in screen coordinates to match POI zoom behavior
+    const originScreenX = width / 2 + panOffset.x;
+    const originScreenY = height / 2 + panOffset.y;
+    
     ctx.fillStyle = '#10b981';
     ctx.strokeStyle = '#06b6d4';
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(0, 0, 8, 0, 2 * Math.PI);
+    ctx.arc(originScreenX, originScreenY, 8, 0, 2 * Math.PI);
     ctx.fill();
     ctx.stroke();
 
@@ -99,11 +104,9 @@ export default function MapCanvas({
     ctx.fillStyle = '#22d3ee';
     ctx.font = '12px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('Lifeboat 5', 0, -15);
+    ctx.fillText('Lifeboat 5', originScreenX, originScreenY - 15);
 
-    ctx.restore();
-
-    // Draw POIs in screen coordinates (after restore to avoid scaling)
+    // Draw POIs in screen coordinates
     pois.forEach(poi => {
       // Transform world coordinates to screen coordinates
       // This should match the canvas transformation: translate(width/2 + panOffset.x, height/2 + panOffset.y) then scale(zoomScale)
@@ -114,15 +117,15 @@ export default function MapCanvas({
       ctx.strokeStyle = '#06b6d4';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.arc(screenX, screenY, 6, 0, 2 * Math.PI);
+      ctx.arc(screenX, screenY, 8, 0, 2 * Math.PI);
       ctx.fill();
       ctx.stroke();
 
       // Label POI
       ctx.fillStyle = '#ffffff';
-      ctx.font = '10px monospace';
+      ctx.font = '12px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText(poi.name, screenX, screenY - 10);
+      ctx.fillText(poi.name, screenX, screenY - 15);
     });
   }, [width, height, pois, panOffset, zoomScale]);
 
@@ -259,6 +262,11 @@ export default function MapCanvas({
     setPois(prev => prev.filter(poi => poi.id !== poiId));
   };
 
+  const handlePOIUpdate = (updatedPOI: POI) => {
+    setPois(prev => prev.map(poi => poi.id === updatedPOI.id ? updatedPOI : poi));
+    setSelectedPOI(updatedPOI); // Update the selected POI to reflect changes
+  };
+
   const handleSidebarClose = () => {
     setSelectedPOI(null);
   };
@@ -294,6 +302,7 @@ export default function MapCanvas({
         poi={selectedPOI}
         onClose={handleSidebarClose}
         onDelete={handlePOIDelete}
+        onUpdate={handlePOIUpdate}
       />
     </>
   );

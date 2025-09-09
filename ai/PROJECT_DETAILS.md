@@ -357,8 +357,13 @@ src/
 - Auto-generated POI names and IDs
 - State management with React hooks
 - Optional callback prop for POI creation events
-- POI Details Sidebar with view/edit/delete functionality
+- POI Details Sidebar with comprehensive CRUD functionality:
+  - View POI details (name, type, coordinates, depth, notes, timestamps)
+  - Edit POI properties (name, type, depth, notes - coordinates read-only)
+  - Delete POI with custom confirmation dialog
+  - Inline editing with save/cancel functionality
 - Custom confirmation dialog for delete operations (80s terminal theme)
+- Edit and delete buttons styled consistently on same line
 
 **UI Theme**:
 - 80s Linux terminal aesthetic with fluorescent green (#00ff00) accents
@@ -373,4 +378,4 @@ src/
 *This section is maintained by the AI during development*
 
 **Last Updated**: 2025-09-09
-**Updated By**: AI (POI CRUD functionality with delete confirmation dialog complete)
+**Updated By**: AI (POI sidebar CRUD functionality complete with edit/delete styling, custom confirmation dialog, and comprehensive test coverage)

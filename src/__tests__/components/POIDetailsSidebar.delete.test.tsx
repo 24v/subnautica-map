@@ -101,7 +101,7 @@ describe('POIDetailsSidebar Delete Functionality', () => {
     expect(mockOnClose).toHaveBeenCalled();
   });
 
-  it('should not call onDelete when onDelete prop is not provided', () => {
+  it('should not show delete button when onDelete prop is not provided', () => {
     render(
       <POIDetailsSidebar 
         poi={mockPOI} 
@@ -109,10 +109,8 @@ describe('POIDetailsSidebar Delete Functionality', () => {
       />
     );
 
-    const deleteButton = screen.getByRole('button', { name: /delete poi/i });
-    fireEvent.click(deleteButton);
-
-    expect(mockConfirm).not.toHaveBeenCalled();
+    const deleteButton = screen.queryByRole('button', { name: /delete poi/i });
+    expect(deleteButton).not.toBeInTheDocument();
   });
 
   it('should handle delete with special characters in POI name', async () => {

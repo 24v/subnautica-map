@@ -17,6 +17,9 @@
 ## Phase 3: POI UI ✅
 - [x] Click on POI to bring up a details sidebar
 - [x] Change delete from right click to a button in the details sidebar with confirmation dialog
+- [x] Edit POI functionality in sidebar (name, type, depth, notes - coordinates read-only)
+- [x] Styled edit and delete buttons consistently on same line
+- [x] Custom confirmation dialog with terminal theme
 - [ ] Open a dialog (in details sidebar) when creating a new POI (and allow cancelling). For now, just using absolute positioning.
 
 ## Phase 4: Bearing System
@@ -26,7 +29,7 @@
 - [ ] Support multiple bearings for triangulation
 
 ## Phase 5: POI Management
-- [ ] Edit POI name and notes
+- [x] Edit POI name and notes (completed in sidebar)
 - [ ] Filter POIs by type (wreck, resource, biome, etc.)
 - [ ] Search POIs by name
 - [ ] Save POIs to localStorage
