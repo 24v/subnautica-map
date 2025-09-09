@@ -8,7 +8,7 @@ These are guidelines for creating commits on the repo.
 
 **Purpose**: Handle git commits with high-quality, informative commit messages.
 
-1. First read the ai/AI_GUIDELINES.md file to control your behaviour.
+1. EVERY TIME THIS COMMAND IS INVOKED - First read the ai/AI_GUIDELINES.md file to control your behaviour.
 
 2. **Analyze Changes**:
    - Review all modified, added, and deleted files
@@ -52,4 +52,4 @@ Based on successful ai-dev-demo-project-ts initialization experience.
 
 5. **Commit message length**
    - Commit messages length or details should align with the scope and complexity of the change (e.g. the details included in a commit should be small if the change was small or not-complex)
-
+   - Dont include lines about updates to tests or adding new tests unless particularly interesting. 
