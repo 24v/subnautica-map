@@ -3,14 +3,11 @@ import MapCanvas from './components/MapCanvas'
 import { useState, useEffect } from 'react'
 
 function App() {
-  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+  const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
 
   useEffect(() => {
     const updateDimensions = () => {
-      // Use most of the viewport, leaving space for header
-      const width = Math.max(800, window.innerWidth - 40);
-      const height = Math.max(600, window.innerHeight - 120);
-      setDimensions({ width, height });
+      setDimensions({ width: window.innerWidth, height: window.innerHeight });
     };
 
     updateDimensions();
@@ -21,13 +18,7 @@ function App() {
 
   return (
     <main className="app">
-      <div className="container">
-        <h1 className="subnautica-title">Subnautica Map</h1>
-        
-        <div className="map-container">
-          <MapCanvas width={dimensions.width} height={dimensions.height} />
-        </div>
-      </div>
+      <MapCanvas width={dimensions.width} height={dimensions.height} />
     </main>
   )
 }
