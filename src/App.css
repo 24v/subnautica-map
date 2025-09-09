@@ -38,7 +38,7 @@ body {
 .reset-view-btn {
   position: absolute;
   bottom: 20px;
-  right: 20px;
+  left: 20px;
   background-color: #14532d;
   color: white;
   border: none;
@@ -47,7 +47,7 @@ body {
   cursor: pointer;
   font-family: monospace;
   font-size: 14px;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
   z-index: 100;
   box-shadow: 0 2px 8px rgba(20, 83, 45, 0.4);
 }
