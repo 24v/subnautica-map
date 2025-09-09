@@ -39,7 +39,7 @@
 
 ## Phase 6: UI Polish (After Core Features Work)
 - [ ] Subnautica-themed colors (blue/teal/orange)
-- [ ] Custom POI icons by type
+- [x] Custom POI icons by type (emoji rendering implemented)
 - [ ] Smooth animations for interactions
 - [ ] Responsive design for mobile
 

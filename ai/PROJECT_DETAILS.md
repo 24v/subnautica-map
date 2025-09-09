@@ -337,9 +337,9 @@ src/
 **Canvas Implementation**:
 - HTML5 Canvas with 2D context (not Konva as originally planned)
 - Grid-based coordinate system with 50px spacing
-- Origin point marked with yellow circle and label
+- Origin point marked with green circle and label (Lifeboat 5)
 - Click-to-add POI functionality with coordinate conversion
-- POI rendering as orange circles with name labels
+- POI rendering using type-specific emojis from POI_METADATA with name labels
 
 **TypeScript Patterns**:
 - Strict typing with interfaces for all data structures
@@ -371,6 +371,7 @@ src/
 - Dark green canvas background (#0a0f0a) for ocean immersion
 - Custom modal dialogs matching terminal theme
 - Fullscreen canvas layout for maximum immersion
+- POI visualization using emoji icons for intuitive type recognition
 
 ---
 
@@ -378,4 +379,4 @@ src/
 *This section is maintained by the AI during development*
 
 **Last Updated**: 2025-09-09
-**Updated By**: AI (POI sidebar CRUD functionality complete with edit/delete styling, custom confirmation dialog, and comprehensive test coverage)
+**Updated By**: AI (POI emoji rendering on canvas, replacing orange circles with type-specific emojis for better visual identification)

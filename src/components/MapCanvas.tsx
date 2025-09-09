@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { POI, POIType } from '../types/poi';
+import { POI, POI_METADATA, POIType } from '../types/poi';
 import POIDetailsSidebar from './POIDetailsSidebar';
 
 interface MapCanvasProps {
@@ -113,13 +113,11 @@ export default function MapCanvas({
       const screenX = (poi.x * zoomScale) + (width / 2 + panOffset.x);
       const screenY = (poi.y * zoomScale) + (height / 2 + panOffset.y);
       
-      ctx.fillStyle = '#f59e0b'; // Orange for POIs (matching old version)
-      ctx.strokeStyle = '#06b6d4';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(screenX, screenY, 8, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.stroke();
+      // Draw POI emoji
+      const poiMetadata = POI_METADATA[poi.type];
+      ctx.font = '16px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(poiMetadata.emoji, screenX, screenY + 5); // +5 to center emoji vertically
 
       // Label POI
       ctx.fillStyle = '#ffffff';
