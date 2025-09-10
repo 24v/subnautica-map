@@ -22,12 +22,15 @@
 - [x] Custom confirmation dialog with terminal theme
 - [x] Open a dialog (in details sidebar) when creating a new POI (and allow cancelling). Right-click to create POI with ADD sidebar mode.
 
-## Phase 4: Bearing System
+## Phase 4: Bearing System ✅
 - [x] Create foundational data types
-- [ ] Add bearing input form (compass direction + distance)
-- [ ] Calculate POI coordinates from bearing + reference point
-- [ ] Show bearing lines on map
-- [ ] Support multiple bearings for triangulation
+- [x] Add bearing input form (compass direction + distance)
+- [x] Calculate POI coordinates from bearing + reference point
+- [x] Show bearing lines on map
+- [x] Support multiple bearings for triangulation
+- [x] Auto-generate bearings relative to Lifeboat 5 for new POIs
+- [x] Remove fixed coordinates mode - all POIs use bearing-based positioning
+- [x] Handle POI deletion with bearing cleanup and coordinate recalculation
 
 ## Phase 5: POI Management
 - [x] Edit POI name and notes (completed in sidebar)

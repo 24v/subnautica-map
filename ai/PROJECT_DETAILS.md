@@ -358,12 +358,18 @@ src/
 - State management with React hooks
 - Optional callback prop for POI creation events
 - POI Details Sidebar with comprehensive CRUD functionality:
-  - View POI details (name, type, coordinates, depth, notes, timestamps)
-  - Edit POI properties (name, type, depth, notes - coordinates read-only)
-  - Delete POI with custom confirmation dialog
+  - View POI details (name, type, position, depth, notes, timestamps)
+  - Edit POI properties (name, type, depth, notes, bearings)
+  - Delete POI with custom confirmation dialog and bearing cleanup
   - Inline editing with save/cancel functionality
 - Custom confirmation dialog for delete operations (80s terminal theme)
 - Edit and delete buttons styled consistently on same line
+- Bearing-based positioning system:
+  - All new POIs auto-generate bearings relative to Lifeboat 5
+  - Multiple bearing support for triangulation
+  - Visual bearing lines on canvas with distance labels
+  - Automatic coordinate calculation from bearings
+  - POI deletion removes orphaned bearing references and recalculates coordinates
 
 **UI Theme**:
 - 80s Linux terminal aesthetic with fluorescent green (#00ff00) accents
