@@ -38,6 +38,9 @@ export default function POIDetailsSidebar({
   };
   
   const [currentPOI, setCurrentPOI] = useState(poi || defaultPOI);
+  
+  // Check if this is Lifeboat 5 (read-only)
+  const isLifeboat5 = currentPOI.id === 'lifeboat-5';
   const metadata = POI_METADATA[currentPOI.type];
 
   const handleDeleteClick = (e: React.MouseEvent) => {
@@ -138,8 +141,10 @@ export default function POIDetailsSidebar({
               <input
                 type="text"
                 value={currentPOI.name}
-                onChange={(e) => handleFieldChange('name', e.target.value)}
-                className="edit-input"
+                onChange={(e) => setCurrentPOI({...currentPOI, name: e.target.value})}
+                placeholder="Enter POI name"
+                disabled={isLifeboat5}
+                readOnly={isLifeboat5}
               />
             </div>
 
@@ -147,12 +152,12 @@ export default function POIDetailsSidebar({
               <label>Type</label>
               <select
                 value={currentPOI.type}
-                onChange={(e) => handleFieldChange('type', e.target.value as POIType)}
-                className="edit-select"
+                onChange={(e) => setCurrentPOI({...currentPOI, type: e.target.value as POIType})}
+                disabled={isLifeboat5}
               >
-                {Object.entries(POI_METADATA).map(([type, meta]) => (
+                {Object.entries(POI_METADATA).map(([type, metadata]) => (
                   <option key={type} value={type}>
-                    {meta.emoji} {meta.label}
+                    {metadata.emoji} {metadata.label}
                   </option>
                 ))}
               </select>
@@ -165,6 +170,7 @@ export default function POIDetailsSidebar({
                   type="button"
                   className={`mode-btn ${currentPOI.definitionMode === 'coordinates' ? 'active' : ''}`}
                   onClick={() => handleModeChange('coordinates')}
+                  disabled={isLifeboat5}
                 >
                   Fixed Coordinates
                 </button>
@@ -172,8 +178,8 @@ export default function POIDetailsSidebar({
                   type="button"
                   className={`mode-btn ${currentPOI.definitionMode === 'bearings' ? 'active' : ''}`}
                   onClick={() => handleModeChange('bearings')}
-                  disabled={availablePOIs.length === 0}
-                  title={availablePOIs.length === 0 ? 'Need other POIs for bearing references' : 'Position using bearings from other POIs'}
+                  disabled={availablePOIs.length === 0 || isLifeboat5}
+                  title={isLifeboat5 ? 'Lifeboat 5 position cannot be changed' : availablePOIs.length === 0 ? 'Need other POIs for bearing references' : 'Position using bearings from other POIs'}
                 >
                   Bearing-Based
                 </button>
@@ -266,10 +272,11 @@ export default function POIDetailsSidebar({
               <label>Depth (m)</label>
               <input
                 type="number"
-                value={currentPOI.depth || ''}
-                onChange={(e) => handleFieldChange('depth', e.target.value ? parseFloat(e.target.value) : undefined)}
-                className="edit-input"
-                placeholder="Optional"
+                value={currentPOI.depth}
+                onChange={(e) => setCurrentPOI({...currentPOI, depth: parseFloat(e.target.value) || 0})}
+                placeholder="0"
+                disabled={isLifeboat5}
+                readOnly={isLifeboat5}
               />
             </div>
 
@@ -277,10 +284,11 @@ export default function POIDetailsSidebar({
               <label>Notes</label>
               <textarea
                 value={currentPOI.notes}
-                onChange={(e) => handleFieldChange('notes', e.target.value)}
-                className="edit-textarea"
-                placeholder="Add notes..."
+                onChange={(e) => setCurrentPOI({...currentPOI, notes: e.target.value})}
+                placeholder="Additional notes about this POI"
                 rows={3}
+                disabled={isLifeboat5}
+                readOnly={isLifeboat5}
               />
             </div>
             {currentPOI.createdAt && (
@@ -293,46 +301,41 @@ export default function POIDetailsSidebar({
       </div>
 
       <div className="sidebar-actions">
-        {!isProvisional ? (
+        {!isLifeboat5 && (
           <>
-            <button 
-              className="save-btn"
-              onClick={handleUpdate}
-              title="Update a POI"
-            >
-              Update
-            </button>
-            <button 
-              className="cancel-btn"
-              onClick={onClose}
-              title="Cancel editing"
-            >
-              Cancel
-            </button>
-            <button 
-              className="delete-btn"
-              onClick={handleDeleteClick}
-              title="Delete POI"
-            >
-              Delete
-            </button>
-          </>
-        ) : (
-          <>
-            <button 
-              className="save-btn"
-              onClick={handleSave}
-              title="Create a new POI"
-            >
-              Create
-            </button>
-            <button 
-              className="cancel-btn"
-              onClick={onClose}
-              title="Cancel POI creation"
-            >
-              ❌ Cancel
-            </button>
+            {!isProvisional ? (
+              <>
+                <button 
+                  className="save-btn" 
+                  onClick={handleUpdate}
+                >
+                  Update
+                </button>
+                <button 
+                  className="delete-btn" 
+                  onClick={handleDeleteClick}
+                >
+                  Delete
+                </button>
+              </>
+            ) : (
+              <>
+                <button 
+                  className="save-btn"
+                  onClick={handleSave}
+                  title="Create a new POI"
+                >
+                  Create
+                </button>
+                <button 
+                  className="cancel-btn"
+                  onClick={onClose}
+                  title="Cancel POI creation"
+                >
+                  ❌ Cancel
+                </button>
+              </>
+            )}
           </>
         )}
       </div>
