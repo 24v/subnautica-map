@@ -486,6 +486,21 @@ textarea:disabled {
   min-width: 80px;
 }
 
+.poi-field-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.type-field {
+  flex: 2;
+}
+
+.depth-field {
+  flex: 1;
+  min-width: 120px;
+}
+
 .remove-bearing-btn {
   background-color: #003300;
   color: white;

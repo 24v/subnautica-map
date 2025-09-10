@@ -49,7 +49,7 @@ export interface POI {
   x: number; // Display coordinates (calculated from bearings if mode is 'bearings')
   y: number; // Display coordinates (calculated from bearings if mode is 'bearings')
   notes?: string;
-  depth?: number;
+  depth: number;
   createdAt: Date;
   updatedAt: Date;
   

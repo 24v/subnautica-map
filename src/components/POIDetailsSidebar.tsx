@@ -40,6 +40,7 @@ export default function POIDetailsSidebar({
     x: coordinates?.x || 0,
     y: coordinates?.y || 0,
     notes: '',
+    depth: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
     definitionMode: 'coordinates',
@@ -86,10 +87,11 @@ export default function POIDetailsSidebar({
       const newDefaultPOI = {
         id: `poi-${Date.now()}`,
         name: 'New POI',
-        type: 'landmark' as POIType,
+        type: 'buoy' as POIType,
         x: coordinates.x,
         y: coordinates.y,
         notes: '',
+        depth: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
         definitionMode: 'bearings' as POIDefinitionMode,
@@ -200,24 +202,41 @@ export default function POIDetailsSidebar({
             />
           </div>
 
-          <div className="poi-field">
-            <label>Type</label>
-            <select
-              value={currentPOI.type}
-              onChange={(e) =>
-                setCurrentPOI({
-                  ...currentPOI,
-                  type: e.target.value as POIType,
-                })
-              }
-              disabled={isLifeboat5}
-            >
-              {Object.entries(POI_METADATA).map(([type, metadata]) => (
-                <option key={type} value={type}>
-                  {metadata.emoji} {metadata.label}
-                </option>
-              ))}
-            </select>
+          <div className="poi-field-row">
+            <div className="poi-field type-field">
+              <label>Type</label>
+              <select
+                value={currentPOI.type}
+                onChange={(e) =>
+                  setCurrentPOI({
+                    ...currentPOI,
+                    type: e.target.value as POIType,
+                  })
+                }
+                disabled={isLifeboat5}
+              >
+                {Object.entries(POI_METADATA).map(([type, metadata]) => (
+                  <option key={type} value={type}>
+                    {metadata.emoji} {metadata.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="poi-field depth-field">
+              <label>Depth (m)</label>
+              <input
+                type="number"
+                value={currentPOI.depth}
+                onChange={(e) =>
+                  setCurrentPOI({
+                    ...currentPOI,
+                    depth: parseFloat(e.target.value) || 0,
+                  })
+                }
+                placeholder="0"
+                disabled={isLifeboat5}
+              />
+            </div>
           </div>
 
           {!isLifeboat5 && (

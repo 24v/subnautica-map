@@ -228,11 +228,12 @@ export default function MapCanvas({
       ctx.fillStyle = '#ffffff'; // Set fill style before drawing emoji
       ctx.fillText(poiMetadata.emoji, screenX, screenY + 5); // +5 to center emoji vertically
 
-      // Label POI
+      // Label POI with depth
       ctx.fillStyle = '#ffffff';
       ctx.font = '12px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText(poi.name, screenX, screenY - 15);
+      const depthText = ` (${poi.depth}m)`;
+      ctx.fillText(`${poi.name}${depthText}`, screenX, screenY - 15);
     });
 
     // Draw temporary POI when in ADD mode
