@@ -5,6 +5,39 @@
 import { POI, BearingRecord } from '../types/poi';
 
 /**
+ * Calculate bearing and distance from one point to another
+ * @param fromX X coordinate of starting point
+ * @param fromY Y coordinate of starting point  
+ * @param toX X coordinate of target point
+ * @param toY Y coordinate of target point
+ * @returns Object with bearing (0-359 degrees) and distance
+ */
+export function calculateBearingAndDistance(
+  fromX: number, 
+  fromY: number, 
+  toX: number, 
+  toY: number
+): { bearing: number; distance: number } {
+  const deltaX = toX - fromX;
+  const deltaY = toY - fromY;
+  
+  // Calculate distance
+  const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+  
+  // Calculate bearing
+  // Math.atan2 returns angle in radians from -π to π
+  // Convert to compass bearing (0° = North, clockwise)
+  let bearing = Math.atan2(deltaX, -deltaY) * (180 / Math.PI);
+  
+  // Normalize to 0-359 degrees
+  if (bearing < 0) {
+    bearing += 360;
+  }
+  
+  return { bearing: Math.round(bearing), distance: Math.round(distance) };
+}
+
+/**
  * Convert bearing (compass degrees) and distance to x,y offset
  * @param bearing Compass bearing in degrees (0 = North, 90 = East, 180 = South, 270 = West)
  * @param distance Distance in meters

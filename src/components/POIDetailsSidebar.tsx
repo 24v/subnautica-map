@@ -43,22 +43,52 @@ export default function POIDetailsSidebar({
   useEffect(() => {
     if (poi) {
       setCurrentPOI(poi);
-    } else if (isProvisional) {
+    } else if (isProvisional && coordinates && allPOIs) {
       // Reset to default POI when creating new (poi is null and isProvisional is true)
+      // Always create new POIs with bearing mode and auto-calculate bearing to nearest POI
+      
+      // Always use Lifeboat 5 as reference for new POIs
+      const lifeboat5 = allPOIs.find(poi => poi.id === 'lifeboat-5');
+      
+      // Create bearing record to Lifeboat 5 if it exists
+      const bearingRecords: BearingRecord[] = [];
+      if (lifeboat5) {
+        // Calculate bearing and distance from Lifeboat 5 to clicked position
+        const deltaX = coordinates.x - lifeboat5.x;
+        const deltaY = coordinates.y - lifeboat5.y;
+        
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        let bearing = Math.atan2(deltaX, -deltaY) * (180 / Math.PI);
+        
+        // Normalize to 0-359 degrees
+        if (bearing < 0) {
+          bearing += 360;
+        }
+        
+        bearingRecords.push({
+          id: `bearing-${Date.now()}`,
+          referencePOIId: lifeboat5.id,
+          distance: Math.round(distance),
+          bearing: Math.round(bearing),
+          createdAt: new Date()
+        });
+      }
+      
       const newDefaultPOI = {
         id: `poi-${Date.now()}`,
         name: 'New POI',
         type: 'landmark' as POIType,
-        x: coordinates?.x || 0,
-        y: coordinates?.y || 0,
+        x: coordinates.x,
+        y: coordinates.y,
         notes: '',
         createdAt: new Date(),
         updatedAt: new Date(),
-        definitionMode: 'coordinates' as POIDefinitionMode
+        definitionMode: 'bearings' as POIDefinitionMode,
+        bearingRecords
       };
       setCurrentPOI(newDefaultPOI);
     }
-  }, [poi, isProvisional, coordinates]);
+  }, [poi, isProvisional, coordinates, allPOIs]);
   
   // Check if this is Lifeboat 5 (read-only)
   const isLifeboat5 = currentPOI.id === 'lifeboat-5';
