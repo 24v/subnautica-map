@@ -121,20 +121,7 @@ export default function POIDetailsSidebar({
     onClose();
  }
 
-  const handleFieldChange = (field: keyof POI, value: any) => {
-    setCurrentPOI({
-      ...currentPOI,
-      [field]: value
-    });
-  };
 
-  const handleModeChange = (mode: POIDefinitionMode) => {
-    setCurrentPOI({
-      ...currentPOI,
-      definitionMode: mode,
-      bearingRecords: mode === 'bearings' ? (currentPOI.bearingRecords || []) : undefined
-    });
-  };
 
   const handleAddBearing = () => {
     const newBearing: BearingRecord = {
@@ -214,37 +201,7 @@ export default function POIDetailsSidebar({
               </select>
             </div>
 
-            <div className="poi-field">
-              <label>Position Mode</label>
-              <div className="mode-toggle">
-                <button
-                  type="button"
-                  className={`mode-btn ${currentPOI.definitionMode === 'coordinates' ? 'active' : ''}`}
-                  onClick={() => handleModeChange('coordinates')}
-                  disabled={isLifeboat5}
-                >
-                  Fixed Coordinates
-                </button>
-                <button
-                  type="button"
-                  className={`mode-btn ${currentPOI.definitionMode === 'bearings' ? 'active' : ''}`}
-                  onClick={() => handleModeChange('bearings')}
-                  disabled={availablePOIs.length === 0 || isLifeboat5}
-                  title={isLifeboat5 ? 'Lifeboat 5 position cannot be changed' : availablePOIs.length === 0 ? 'Need other POIs for bearing references' : 'Position using bearings from other POIs'}
-                >
-                  Bearing-Based
-                </button>
-              </div>
-            </div>
-
-            {currentPOI.definitionMode === 'coordinates' ? (
-              <div className="poi-field">
-                <label>Coordinates (read-only)</label>
-                <div className="coordinates">
-                  X: {currentPOI.x.toFixed(1)}, Y: {currentPOI.y.toFixed(1)}
-                </div>
-              </div>
-            ) : (
+            {!isLifeboat5 && (
               <div className="poi-field">
                 <label>Bearings</label>
                 <div className="bearings-section">
@@ -302,22 +259,30 @@ export default function POIDetailsSidebar({
                       </div>
                     </div>
                   ))}
-                  <button
-                    type="button"
-                    onClick={handleAddBearing}
-                    className="add-bearing-btn"
-                    disabled={availablePOIs.length === 0}
-                  >
-                    + Add Bearing
-                  </button>
-                  {currentPOI.bearingRecords && currentPOI.bearingRecords.length > 0 && (
-                    <div className="calculated-coordinates">
-                      <small>Calculated position: X: {currentPOI.x.toFixed(1)}, Y: {currentPOI.y.toFixed(1)}</small>
-                    </div>
-                  )}
+                  <div className="bearing-actions">
+                    <button
+                      type="button"
+                      onClick={handleAddBearing}
+                      className="add-bearing-btn"
+                      disabled={availablePOIs.length === 0}
+                      title={availablePOIs.length === 0 ? 'Need other POIs to add bearings' : 'Add another bearing'}
+                    >
+                      Add Bearing
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
+
+            <div className="poi-field">
+              <label>Position</label>
+              <div className="coordinates">
+                X: {currentPOI.x.toFixed(1)}, Y: {currentPOI.y.toFixed(1)}
+                {currentPOI.definitionMode === 'bearings' && currentPOI.bearingRecords && currentPOI.bearingRecords.length > 0 && (
+                  <small> (calculated from bearings)</small>
+                )}
+              </div>
+            </div>
 
             <div className="poi-field">
               <label>Depth (m)</label>

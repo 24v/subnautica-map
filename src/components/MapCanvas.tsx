@@ -354,7 +354,41 @@ export default function MapCanvas({
   }, [isAddingPOI]);
 
   const handlePOIDelete = (poiId: string) => {
-    setPois(prev => prev.filter(poi => poi.id !== poiId));
+    setPois(prev => {
+      // Remove the POI being deleted
+      const updatedPois = prev.filter(poi => poi.id !== poiId);
+      
+      // Clean up bearings that reference the deleted POI and recalculate coordinates
+      const cleanedPois = updatedPois.map(poi => {
+        if (poi.bearingRecords && poi.bearingRecords.length > 0) {
+          // Remove bearings that reference the deleted POI
+          const filteredBearings = poi.bearingRecords.filter(
+            bearing => bearing.referencePOIId !== poiId
+          );
+          
+          // If no bearings left, switch to coordinates mode
+          if (filteredBearings.length === 0) {
+            return {
+              ...poi,
+              definitionMode: 'coordinates' as const,
+              bearingRecords: undefined
+            };
+          }
+          
+          // If bearings remain, recalculate coordinates
+          const updatedPOI = {
+            ...poi,
+            bearingRecords: filteredBearings
+          };
+          
+          return recalculatePOICoordinates(updatedPOI, updatedPois);
+        }
+        
+        return poi;
+      });
+      
+      return cleanedPois;
+    });
   };
 
   const handlePOIUpdate = (updatedPOI: POI) => {
