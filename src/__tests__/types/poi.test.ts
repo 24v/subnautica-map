@@ -53,10 +53,11 @@ describe('POI Types', () => {
   it('should have valid bearing structure', () => {
     const testBearing: BearingRecord = {
       id: 'bearing-1',
-      referencePOIId: 'lifeboat-5',
-      bearing: 45,
-      distance: 500,
-      createdAt: new Date()
+      referencePOIId: 'poi-1',
+      bearing: 90,
+      distance: 100,
+      direction: 'to',
+      createdAt: new Date(),
     };
 
     expect(testBearing.bearing).toBeGreaterThanOrEqual(0);

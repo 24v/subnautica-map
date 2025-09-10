@@ -10,9 +10,10 @@ const mockPOI: POI = {
   x: 100,
   y: 200,
   notes: 'Test notes',
-  createdAt: new Date('2024-01-01T12:00:00Z'),
-  updatedAt: new Date('2024-01-01T12:00:00Z'),
-  definitionMode: 'coordinates' as const
+  depth: 0,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  definitionMode: 'coordinates',
 };
 
 describe('POIDetailsSidebar', () => {

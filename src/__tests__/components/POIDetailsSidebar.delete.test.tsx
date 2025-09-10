@@ -18,9 +18,10 @@ describe('POIDetailsSidebar Delete Functionality', () => {
     x: 100,
     y: 200,
     notes: 'Test notes',
-    createdAt: new Date('2023-01-01'),
-    updatedAt: new Date('2023-01-01'),
-    definitionMode: 'coordinates' as const
+    depth: 0,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    definitionMode: 'coordinates',
   };
 
   const mockOnClose = vi.fn();
