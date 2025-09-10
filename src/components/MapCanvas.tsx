@@ -3,6 +3,7 @@ import { POI, POI_METADATA, BearingRecord } from '../types/poi';
 import { recalculatePOICoordinates } from '../utils/bearingCalculations';
 import { mapStorage } from '../services/mapStorage';
 import POIDetailsSidebar from './POIDetailsSidebar';
+import MapManager from './MapManager';
 
 interface MapCanvasProps {
   width?: number;
@@ -25,6 +26,8 @@ export default function MapCanvas({
   const [isAddingPOI, setIsAddingPOI] = useState(false);
   const [newPOICoordinates, setNewPOICoordinates] = useState<{x: number, y: number} | null>(null);
   const [currentMapId, setCurrentMapId] = useState<string | null>(null);
+  const [currentMapName, setCurrentMapName] = useState<string>('');
+  const [showMapManager, setShowMapManager] = useState(false);
   
   // Pan state management
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
@@ -50,11 +53,13 @@ export default function MapCanvas({
         const currentMap = mapStorage.initialize();
         setPois(currentMap.pois);
         setCurrentMapId(currentMap.id);
+        setCurrentMapName(currentMap.name);
       } catch (error) {
         console.error('Error initializing map:', error);
         // Fallback to default state
         setPois([]);
         setCurrentMapId(null);
+        setCurrentMapName('');
       }
     };
 
@@ -463,9 +468,29 @@ export default function MapCanvas({
     }
   };
 
+  const handleMapSwitch = (mapId: string) => {
+    const map = mapStorage.getMap(mapId);
+    if (map) {
+      setPois(map.pois);
+      setCurrentMapId(map.id);
+      setCurrentMapName(map.name);
+    }
+  };
+
   return (
     <>
       <div className="canvas-container">
+        {/* Map name display and manager button */}
+        <div className="map-header">
+          <button 
+            className="map-name-btn"
+            onClick={() => setShowMapManager(true)}
+            title="Click to manage maps"
+          >
+            📍 {currentMapName || 'Loading...'}
+          </button>
+        </div>
+
         <canvas
           ref={canvasRef}
           width={width}
@@ -502,6 +527,14 @@ export default function MapCanvas({
           allPOIs={pois}
         />
       )}
+
+      {/* Map Manager Modal */}
+      <MapManager
+        isOpen={showMapManager}
+        onClose={() => setShowMapManager(false)}
+        currentMapId={currentMapId}
+        onMapSwitch={handleMapSwitch}
+      />
     </>
   );
 }

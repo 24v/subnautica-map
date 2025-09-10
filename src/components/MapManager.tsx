@@ -1,0 +1,187 @@
+/**
+ * Map management modal for switching, renaming, and deleting maps
+ */
+
+import { useState, useEffect } from 'react';
+import { POIMap } from '../types/poi';
+import { mapStorage } from '../services/mapStorage';
+
+interface MapManagerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  currentMapId: string | null;
+  onMapSwitch: (mapId: string) => void;
+}
+
+export default function MapManager({ isOpen, onClose, currentMapId, onMapSwitch }: MapManagerProps) {
+  const [maps, setMaps] = useState<POIMap[]>([]);
+  const [editingMapId, setEditingMapId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+
+  // Load maps when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      const allMaps = mapStorage.getAllMaps();
+      setMaps(allMaps);
+    }
+  }, [isOpen]);
+
+  const handleCreateMap = () => {
+    const newMap = mapStorage.createMap(`Map ${maps.length + 1}`);
+    setMaps(mapStorage.getAllMaps());
+    onMapSwitch(newMap.id);
+  };
+
+  const handleStartEdit = (map: POIMap) => {
+    setEditingMapId(map.id);
+    setEditingName(map.name);
+  };
+
+  const handleSaveEdit = () => {
+    if (editingMapId && editingName.trim()) {
+      mapStorage.updateMap(editingMapId, { name: editingName.trim() });
+      setMaps(mapStorage.getAllMaps());
+      setEditingMapId(null);
+      setEditingName('');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingMapId(null);
+    setEditingName('');
+  };
+
+  const handleDeleteMap = (mapId: string) => {
+    mapStorage.deleteMap(mapId);
+    const updatedMaps = mapStorage.getAllMaps();
+    setMaps(updatedMaps);
+    
+    // If we deleted the current map, switch to the first available map
+    if (mapId === currentMapId) {
+      if (updatedMaps.length > 0) {
+        onMapSwitch(updatedMaps[0].id);
+      } else {
+        // Create a new map if no maps left
+        const newMap = mapStorage.createMap('Default Map');
+        setMaps([newMap]);
+        onMapSwitch(newMap.id);
+      }
+    }
+    
+    setShowDeleteConfirm(null);
+  };
+
+  const handleMapSwitch = (mapId: string) => {
+    mapStorage.setCurrentMap(mapId);
+    onMapSwitch(mapId);
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content map-manager" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Map Manager</h2>
+          <button className="close-btn" onClick={onClose}>×</button>
+        </div>
+
+        <div className="modal-body">
+          <div className="map-actions">
+            <button className="create-map-btn" onClick={handleCreateMap}>
+              + Create New Map
+            </button>
+          </div>
+
+          <div className="maps-list">
+            {maps.map((map) => (
+              <div 
+                key={map.id} 
+                className={`map-item ${map.id === currentMapId ? 'current' : ''}`}
+              >
+                <div className="map-info">
+                  {editingMapId === map.id ? (
+                    <div className="edit-name">
+                      <input
+                        type="text"
+                        value={editingName}
+                        onChange={(e) => setEditingName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleSaveEdit();
+                          if (e.key === 'Escape') handleCancelEdit();
+                        }}
+                        autoFocus
+                      />
+                      <div className="edit-actions">
+                        <button onClick={handleSaveEdit}>✓</button>
+                        <button onClick={handleCancelEdit}>×</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="map-name" onClick={() => handleMapSwitch(map.id)}>
+                        {map.name}
+                        {map.id === currentMapId && <span className="current-indicator"> (current)</span>}
+                      </div>
+                      <div className="map-meta">
+                        {map.pois.length} POIs • Updated {map.updatedAt.toLocaleDateString()}
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                <div className="map-actions">
+                  {editingMapId !== map.id && (
+                    <>
+                      <button 
+                        className="edit-btn"
+                        onClick={() => handleStartEdit(map)}
+                        title="Rename map"
+                      >
+                        ✏️
+                      </button>
+                      <button 
+                        className="delete-btn"
+                        onClick={() => setShowDeleteConfirm(map.id)}
+                        title="Delete map"
+                        disabled={maps.length === 1}
+                      >
+                        🗑️
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Delete confirmation dialog */}
+        {showDeleteConfirm && (
+          <div className="delete-confirm-overlay">
+            <div className="delete-confirm-dialog">
+              <h3>Delete Map</h3>
+              <p>Are you sure you want to delete this map? This action cannot be undone.</p>
+              <div className="delete-confirm-actions">
+                <button 
+                  className="confirm-delete-btn"
+                  onClick={() => handleDeleteMap(showDeleteConfirm)}
+                >
+                  Delete
+                </button>
+                <button 
+                  className="cancel-delete-btn"
+                  onClick={() => setShowDeleteConfirm(null)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
