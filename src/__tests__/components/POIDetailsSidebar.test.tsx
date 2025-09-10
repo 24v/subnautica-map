@@ -11,8 +11,8 @@ const mockPOI: POI = {
   y: 200,
   notes: 'Test notes',
   depth: 0,
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  createdAt: new Date('2024-01-15'),
+  updatedAt: new Date('2024-01-15'),
   definitionMode: 'coordinates',
 };
 
