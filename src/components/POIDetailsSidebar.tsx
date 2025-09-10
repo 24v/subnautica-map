@@ -31,7 +31,8 @@ export default function POIDetailsSidebar({
     y: coordinates?.y || 0,
     notes: '',
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    definitionMode: 'coordinates'
   };
   
   const [currentPOI, setCurrentPOI] = useState(poi || defaultPOI);

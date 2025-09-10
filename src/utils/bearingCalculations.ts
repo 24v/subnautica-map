@@ -1,0 +1,153 @@
+/**
+ * Bearing calculation utilities for POI positioning system
+ */
+
+import { POI, BearingRecord } from '../types/poi';
+
+/**
+ * Convert bearing (compass degrees) and distance to x,y offset
+ * @param bearing Compass bearing in degrees (0 = North, 90 = East, 180 = South, 270 = West)
+ * @param distance Distance in meters
+ * @returns Object with x and y offsets
+ */
+export function bearingToOffset(bearing: number, distance: number): { x: number; y: number } {
+  // Convert compass bearing to mathematical angle (0° = East, counterclockwise)
+  // Compass: 0° = North, 90° = East, 180° = South, 270° = West
+  // Math: 0° = East, 90° = North, 180° = West, 270° = South
+  const mathAngle = (90 - bearing) * (Math.PI / 180);
+  
+  return {
+    x: Math.cos(mathAngle) * distance,
+    y: -Math.sin(mathAngle) * distance // Negative because canvas Y increases downward
+  };
+}
+
+/**
+ * Calculate POI coordinates from bearing records using triangulation
+ * If only one bearing record exists, uses that single reference point
+ * If multiple bearing records exist, uses triangulation to find the best fit position
+ * @param bearingRecords Array of bearing records for this POI
+ * @param allPOIs Array of all POIs to find reference points
+ * @returns Calculated x,y coordinates
+ */
+export function calculatePOICoordinates(
+  bearingRecords: BearingRecord[],
+  allPOIs: POI[]
+): { x: number; y: number } {
+  if (bearingRecords.length === 0) {
+    throw new Error('Cannot calculate coordinates without bearing records');
+  }
+
+  // Create a map for quick POI lookup
+  const poiMap = new Map(allPOIs.map(poi => [poi.id, poi]));
+
+  if (bearingRecords.length === 1) {
+    // Single bearing - simple calculation
+    const record = bearingRecords[0];
+    const targetPOI = poiMap.get(record.targetPOIId);
+    
+    if (!targetPOI) {
+      throw new Error(`Target POI ${record.targetPOIId} not found`);
+    }
+
+    const offset = bearingToOffset(record.bearing, record.distance);
+    return {
+      x: targetPOI.x + offset.x,
+      y: targetPOI.y + offset.y
+    };
+  }
+
+  // Multiple bearings - use triangulation
+  return triangulatePosition(bearingRecords, poiMap);
+}
+
+/**
+ * Triangulate position from multiple bearing records
+ * Uses least squares method to find best fit position
+ */
+function triangulatePosition(
+  bearingRecords: BearingRecord[],
+  poiMap: Map<string, POI>
+): { x: number; y: number } {
+  const positions: Array<{ x: number; y: number }> = [];
+
+  // Calculate position from each bearing record
+  for (const record of bearingRecords) {
+    const targetPOI = poiMap.get(record.targetPOIId);
+    if (!targetPOI) {
+      console.warn(`Target POI ${record.targetPOIId} not found, skipping bearing record`);
+      continue;
+    }
+
+    const offset = bearingToOffset(record.bearing, record.distance);
+    positions.push({
+      x: targetPOI.x + offset.x,
+      y: targetPOI.y + offset.y
+    });
+  }
+
+  if (positions.length === 0) {
+    throw new Error('No valid bearing records found for triangulation');
+  }
+
+  // Calculate average position (simple triangulation)
+  const avgX = positions.reduce((sum, pos) => sum + pos.x, 0) / positions.length;
+  const avgY = positions.reduce((sum, pos) => sum + pos.y, 0) / positions.length;
+
+  return { x: avgX, y: avgY };
+}
+
+/**
+ * Recalculate coordinates for a POI based on its bearing records
+ * @param poi POI to recalculate
+ * @param allPOIs Array of all POIs for reference
+ * @returns Updated POI with new coordinates
+ */
+export function recalculatePOICoordinates(poi: POI, allPOIs: POI[]): POI {
+  if (poi.definitionMode !== 'bearings' || !poi.bearingRecords || poi.bearingRecords.length === 0) {
+    return poi; // No recalculation needed
+  }
+
+  try {
+    const newCoords = calculatePOICoordinates(poi.bearingRecords, allPOIs);
+    return {
+      ...poi,
+      x: newCoords.x,
+      y: newCoords.y,
+      updatedAt: new Date()
+    };
+  } catch (error) {
+    console.error(`Failed to recalculate coordinates for POI ${poi.id}:`, error);
+    return poi; // Return original POI if calculation fails
+  }
+}
+
+/**
+ * Validate that all bearing records reference existing POIs
+ * @param bearingRecords Array of bearing records to validate
+ * @param allPOIs Array of all available POIs
+ * @returns Array of validation errors (empty if all valid)
+ */
+export function validateBearingRecords(
+  bearingRecords: BearingRecord[],
+  allPOIs: POI[]
+): string[] {
+  const errors: string[] = [];
+  const poiIds = new Set(allPOIs.map(poi => poi.id));
+
+  for (const record of bearingRecords) {
+    if (!poiIds.has(record.targetPOIId)) {
+      errors.push(`Target POI ${record.targetPOIId} does not exist`);
+    }
+    
+    if (record.distance <= 0) {
+      errors.push(`Distance must be positive, got ${record.distance}`);
+    }
+    
+    if (record.bearing < 0 || record.bearing >= 360) {
+      errors.push(`Bearing must be between 0-359 degrees, got ${record.bearing}`);
+    }
+  }
+
+  return errors;
+}

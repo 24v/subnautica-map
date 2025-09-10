@@ -13,29 +13,30 @@ export type POIType =
   | 'base'
   | 'buoy';
 
+export type POIDefinitionMode = 'coordinates' | 'bearings';
+
+export interface BearingRecord {
+  id: string;
+  targetPOIId: string; // The POI this bearing points to
+  distance: number; // Distance in meters
+  bearing: number; // Compass bearing in degrees (0-359, where 0 = North)
+  createdAt: Date;
+}
+
 export interface POI {
   id: string;
   name: string;
   type: POIType;
-  x: number;
-  y: number;
+  x: number; // Display coordinates (calculated from bearings if mode is 'bearings')
+  y: number; // Display coordinates (calculated from bearings if mode is 'bearings')
   notes?: string;
   depth?: number;
   createdAt: Date;
   updatedAt: Date;
-}
-
-export interface Bearing {
-  id: string;
-  fromPOIId: string;
-  toPOIId: string;
-  direction: number; // 0-359 degrees
-  distance: number; // meters
-  createdAt: Date;
-}
-
-export interface POIWithBearings extends POI {
-  bearings: Bearing[];
+  
+  // Bearing system fields
+  definitionMode: POIDefinitionMode;
+  bearingRecords?: BearingRecord[]; // Only used when definitionMode is 'bearings'
 }
 
 // POI type metadata for UI display
@@ -61,5 +62,6 @@ export const LIFEBOAT_5: POI = {
   notes: 'Starting location - coordinate system origin',
   depth: 0,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  definitionMode: 'coordinates'
 };
