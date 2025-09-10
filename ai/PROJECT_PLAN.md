@@ -20,7 +20,7 @@
 - [x] Edit POI functionality in sidebar (name, type, depth, notes - coordinates read-only)
 - [x] Styled edit and delete buttons consistently on same line
 - [x] Custom confirmation dialog with terminal theme
-- [ ] Open a dialog (in details sidebar) when creating a new POI (and allow cancelling). For now, just using absolute positioning.
+- [x] Open a dialog (in details sidebar) when creating a new POI (and allow cancelling). Right-click to create POI with ADD sidebar mode.
 
 ## Phase 4: Bearing System
 - [ ] Add bearing input form (compass direction + distance)

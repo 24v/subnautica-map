@@ -54,43 +54,22 @@ export default function POIDetailsSidebar({
     setShowConfirmDialog(false);
   };
 
-  // // // // const handleEditClick = () => {
-  // // //   setEditedPOI({ ...currentPOI });
-  // //   setIsEditing(true);
-  // };
+  const handleSave = () => {
+     onSave(currentPOI);
+     onClose();
+  }
 
-  // const handleUpdate = () => {
-  //     onUpdate({...currentPOI, updatedAt: new Date()});
-  //     setIsEditing(false);
-  //   }
-  // };
+  const handleUpdate = () => {
+    onUpdate(currentPOI);
+    onClose();
+ }
 
-
-  // const handleSaveEdit = () => {
-  //   if (editedPOI && onUpdate) {
-  //     const updatedPOI = {
-  //       ...currentPOI,
-  //       ...editedPOI,
-  //       updatedAt: new Date()
-  //     };
-  //     onUpdate(updatedPOI);
-  //     setIsEditing(false);
-  //     setEditedPOI(null);
-  //   }
-  // };
-
-  // const handleCancelEdit = () => {
-  //   setIsEditing(false);
-  //   setEditedPOI(null);
-  // };
-
-  // const handleFieldChange = (field: keyof POI, value: any) => {
-  //   setEditedPOI({
-  //     ...currentPOI,
-  //     ...editedPOI,
-  //     [field]: value
-  //   });
-  // };
+  const handleFieldChange = (field: keyof POI, value: any) => {
+    setCurrentPOI({
+      ...currentPOI,
+      [field]: value
+    });
+  };
 
   return (
     <div className="poi-details-sidebar">
@@ -114,7 +93,7 @@ export default function POIDetailsSidebar({
               <input
                 type="text"
                 value={currentPOI.name}
-                // onChange={(e) => handleFieldChange('name', e.target.value)}
+                onChange={(e) => handleFieldChange('name', e.target.value)}
                 className="edit-input"
               />
             </div>
@@ -123,7 +102,7 @@ export default function POIDetailsSidebar({
               <label>Type</label>
               <select
                 value={currentPOI.type}
-                // onChange={(e) => handleFieldChange('type', e.target.value as POIType)}
+                onChange={(e) => handleFieldChange('type', e.target.value as POIType)}
                 className="edit-select"
               >
                 {Object.entries(POI_METADATA).map(([type, meta]) => (
@@ -146,7 +125,7 @@ export default function POIDetailsSidebar({
               <input
                 type="number"
                 value={currentPOI.depth || ''}
-                // onChange={(e) => handleFieldChange('depth', e.target.value ? parseFloat(e.target.value) : undefined)}
+                onChange={(e) => handleFieldChange('depth', e.target.value ? parseFloat(e.target.value) : undefined)}
                 className="edit-input"
                 placeholder="Optional"
               />
@@ -156,7 +135,7 @@ export default function POIDetailsSidebar({
               <label>Notes</label>
               <textarea
                 value={currentPOI.notes}
-                // onChange={(e) => handleFieldChange('notes', e.target.value)}
+                onChange={(e) => handleFieldChange('notes', e.target.value)}
                 className="edit-textarea"
                 placeholder="Add notes..."
                 rows={3}
@@ -176,32 +155,34 @@ export default function POIDetailsSidebar({
           <>
             <button 
               className="save-btn"
-              // onClick={handleSaveEdit}
-              title="Save changes"
+              onClick={handleUpdate}
+              title="Update a POI"
             >
-              💾 Save
+              Update
             </button>
             <button 
               className="cancel-btn"
-              // onClick={handleCancelEdit}
+              onClick={onClose}
               title="Cancel editing"
             >
-              ❌ Cancel
+              Cancel
+            </button>
+            <button 
+              className="delete-btn"
+              onClick={handleDeleteClick}
+              title="Delete POI"
+            >
+              Delete
             </button>
           </>
         ) : (
           <>
             <button 
               className="save-btn"
-              onClick={() => {
-                // if (onSave) {
-                  // const poiToSave = editedPOI || currentPOI;
-                  // onSave(poiToSave);
-                // }
-              }}
-              title="Save new POI"
+              onClick={handleSave}
+              title="Create a new POI"
             >
-              💾 Save POI
+              Create
             </button>
             <button 
               className="cancel-btn"
