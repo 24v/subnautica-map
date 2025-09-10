@@ -194,43 +194,54 @@ export default function POIDetailsSidebar({
                   {(currentPOI.bearingRecords || []).map((bearing) => (
                     <div key={bearing.id} className="bearing-entry">
                       <div className="bearing-controls">
-                        <select
-                          value={bearing.targetPOIId}
-                          onChange={(e) => handleBearingChange(bearing.id, 'targetPOIId', e.target.value)}
-                          className="bearing-select"
-                        >
-                          <option value="">Select reference POI</option>
-                          {availablePOIs.map(poi => (
-                            <option key={poi.id} value={poi.id}>
-                              {poi.name}
-                            </option>
-                          ))}
-                        </select>
-                        <input
-                          type="number"
-                          placeholder="Distance (m)"
-                          value={bearing.distance}
-                          onChange={(e) => handleBearingChange(bearing.id, 'distance', parseFloat(e.target.value) || 0)}
-                          className="bearing-input"
-                          min="0"
-                        />
-                        <input
-                          type="number"
-                          placeholder="Bearing (°)"
-                          value={bearing.bearing}
-                          onChange={(e) => handleBearingChange(bearing.id, 'bearing', parseInt(e.target.value) || 0)}
-                          className="bearing-input"
-                          min="0"
-                          max="359"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveBearing(bearing.id)}
-                          className="remove-bearing-btn"
-                          title="Remove bearing"
-                        >
-                          ×
-                        </button>
+                        <div className="bearing-field">
+                          <label>Reference POI</label>
+                          <select
+                            value={bearing.targetPOIId}
+                            onChange={(e) => handleBearingChange(bearing.id, 'targetPOIId', e.target.value)}
+                            className="bearing-select"
+                          >
+                            <option value="">Select reference POI</option>
+                            {availablePOIs.map(poi => (
+                              <option key={poi.id} value={poi.id}>
+                                {poi.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="bearing-field">
+                          <label>Distance (meters)</label>
+                          <input
+                            type="number"
+                            placeholder="100"
+                            value={bearing.distance === 0 ? '' : bearing.distance}
+                            onChange={(e) => handleBearingChange(bearing.id, 'distance', e.target.value === '' ? 0 : parseFloat(e.target.value))}
+                            className="bearing-input"
+                            min="0"
+                          />
+                        </div>
+                        <div className="bearing-field">
+                          <label>Bearing (degrees)</label>
+                          <input
+                            type="number"
+                            placeholder="0-359"
+                            value={bearing.bearing === 0 ? '' : bearing.bearing}
+                            onChange={(e) => handleBearingChange(bearing.id, 'bearing', e.target.value === '' ? 0 : parseInt(e.target.value))}
+                            className="bearing-input"
+                            min="0"
+                            max="359"
+                          />
+                        </div>
+                        <div className="bearing-actions">
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveBearing(bearing.id)}
+                            className="remove-bearing-btn"
+                            title="Remove bearing"
+                          >
+                            × Remove
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
