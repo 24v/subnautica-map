@@ -1,28 +1,12 @@
 # Subnautica Map
 
-Interactive mapping tool for Subnautica that maintains the game's atmospheric feel and immersion.
+Create subnautica maps based on triangulation and bearings.
 
-## Overview
+Instead of having a fog-of-war map, this tool uses a coordinate-based system where players enter Points of Interest (POIs) based on bearings and distances from known locations, starting from Lifepod 5.
 
-Instead of traditional maps with lines or fog-of-war mechanics, this tool uses a coordinate-based system where players enter Points of Interest (POIs) based on bearings and distances from known locations, starting from Lifepod 5.
+[View Here](https://24v.github.io/subnautica-map/)
 
-## Features
-
-- **Bearing-based coordinate system**: Enter POIs using distance and bearing from existing points
-- **Triangulation algorithm**: Automatically calculates coordinates from multiple bearing references
-- **Immersive UI**: Maintains Subnautica's atmospheric design
-- **Interactive 2D map**: Visual representation of discovered locations
-- **POI management**: Add, edit, and categorize points of interest
-
-## Tech Stack
-
-- **Frontend**: React 18 + TypeScript
-- **Build Tool**: Vite
-- **Testing**: Vitest + React Testing Library
-- **Styling**: CSS with Subnautica-inspired theming
-- **Package Manager**: pnpm
-
-## Getting Started
+<img src="./docs/images/Screenshot.png" width="800">
 
 ### Prerequisites
 
@@ -58,22 +42,6 @@ pnpm test:coverage
 pnpm test:ui
 ```
 
-## Project Structure
+### Deployment
 
-```
-src/
-├── components/          # Reusable UI components
-├── hooks/              # Custom React hooks
-├── utils/              # Utility functions
-├── data/               # Data management
-├── styles/             # Global styles
-└── __tests__/          # Test files
-```
-
-## Contributing
-
-This project follows the AI_DEV framework for structured development. See the `/ai` folder for development guidelines and project documentation.
-
-## License
-
-See LICENSE file for details.
+This is currently deployed through github pages: [View Here](https://24v.github.io/subnautica-map/)
