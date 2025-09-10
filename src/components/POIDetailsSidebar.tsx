@@ -1,5 +1,5 @@
 import { POI, POI_METADATA, POIType, BearingRecord, POIDefinitionMode } from '../types/poi';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface POIDetailsSidebarProps {
   poi: POI | null;
@@ -38,6 +38,27 @@ export default function POIDetailsSidebar({
   };
   
   const [currentPOI, setCurrentPOI] = useState(poi || defaultPOI);
+  
+  // Update currentPOI when poi prop changes (for POI switching)
+  useEffect(() => {
+    if (poi) {
+      setCurrentPOI(poi);
+    } else if (isProvisional) {
+      // Reset to default POI when creating new (poi is null and isProvisional is true)
+      const newDefaultPOI = {
+        id: `poi-${Date.now()}`,
+        name: 'New POI',
+        type: 'landmark' as POIType,
+        x: coordinates?.x || 0,
+        y: coordinates?.y || 0,
+        notes: '',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        definitionMode: 'coordinates' as POIDefinitionMode
+      };
+      setCurrentPOI(newDefaultPOI);
+    }
+  }, [poi, isProvisional, coordinates]);
   
   // Check if this is Lifeboat 5 (read-only)
   const isLifeboat5 = currentPOI.id === 'lifeboat-5';

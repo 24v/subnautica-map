@@ -238,13 +238,6 @@ export default function MapCanvas({
 
     // Handle left-click for POI selection and dragging
     if (event.button === 0) {
-      // Close ADD sidebar if open
-      if (isAddingPOI) {
-        setIsAddingPOI(false);
-        setNewPOICoordinates(null);
-        return;
-      }
-
       // Check if we clicked on an existing POI
       const clickedPOI = pois.find(poi => {
         const distance = Math.sqrt((poi.x - x) ** 2 + (poi.y - y) ** 2);
@@ -252,10 +245,21 @@ export default function MapCanvas({
       });
 
       if (clickedPOI) {
+        // Switch to showing the clicked POI (even if we're in ADD mode)
         setSelectedPOI(clickedPOI);
+        setIsAddingPOI(false);
+        setNewPOICoordinates(null);
       } else {
+        // If we're in ADD mode, clicking empty space cancels it
+        if (isAddingPOI) {
+          setIsAddingPOI(false);
+          setNewPOICoordinates(null);
+          setSelectedPOI(null);
+          return;
+        }
+        
+        // Otherwise close sidebar and start dragging
         setSelectedPOI(null);
-        // Start dragging if not clicking on a POI
         setIsDragging(true);
         setDragStart({
           x: event.clientX - panOffset.x,
