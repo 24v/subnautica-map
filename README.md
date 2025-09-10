@@ -8,11 +8,6 @@ Instead of having a fog-of-war map, this tool uses a coordinate-based system whe
 
 <img src="./docs/images/Screenshot.png" width="800">
 
-### Prerequisites
-
-- Node.js 18+
-- pnpm
-
 ### Installation
 
 ```bash
