@@ -11,24 +11,29 @@ const mockPOI: POI = {
   y: 200,
   notes: 'Test notes',
   createdAt: new Date('2024-01-01T12:00:00Z'),
-  updatedAt: new Date('2024-01-01T12:00:00Z')
+  updatedAt: new Date('2024-01-01T12:00:00Z'),
+  definitionMode: 'coordinates' as const
 };
 
 describe('POIDetailsSidebar', () => {
   it('renders POI details correctly', () => {
     const mockOnClose = vi.fn();
     const mockOnDelete = vi.fn();
+    const mockOnUpdate = vi.fn();
+    const mockOnSave = vi.fn();
 
     render(
       <POIDetailsSidebar 
         poi={mockPOI} 
         onClose={mockOnClose} 
-        onDelete={mockOnDelete} 
+        onDelete={mockOnDelete}
+        onUpdate={mockOnUpdate}
+        onSave={mockOnSave}
       />
     );
 
-    expect(screen.getByText('Test POI')).toBeInTheDocument();
-    expect(screen.getByText('Landmark')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Test POI')).toBeInTheDocument();
+    expect(screen.getByText('🎯 Landmark')).toBeInTheDocument();
     expect(screen.getByText('X: 100.0, Y: 200.0')).toBeInTheDocument();
     expect(screen.getByText('Test notes')).toBeInTheDocument();
   });
@@ -36,12 +41,16 @@ describe('POIDetailsSidebar', () => {
   it('calls onClose when close button is clicked', () => {
     const mockOnClose = vi.fn();
     const mockOnDelete = vi.fn();
+    const mockOnUpdate = vi.fn();
+    const mockOnSave = vi.fn();
 
     render(
       <POIDetailsSidebar 
         poi={mockPOI} 
         onClose={mockOnClose} 
-        onDelete={mockOnDelete} 
+        onDelete={mockOnDelete}
+        onUpdate={mockOnUpdate}
+        onSave={mockOnSave}
       />
     );
 
@@ -54,21 +63,26 @@ describe('POIDetailsSidebar', () => {
   it('calls onDelete when delete button is clicked and confirmed', async () => {
     const mockOnClose = vi.fn();
     const mockOnDelete = vi.fn();
+    const mockOnUpdate = vi.fn();
+    const mockOnSave = vi.fn();
 
     render(
       <POIDetailsSidebar 
         poi={mockPOI} 
         onClose={mockOnClose} 
-        onDelete={mockOnDelete} 
+        onDelete={mockOnDelete}
+        onUpdate={mockOnUpdate}
+        onSave={mockOnSave}
       />
     );
 
-    const deleteButton = screen.getByRole('button', { name: /delete poi/i });
+    const deleteButton = screen.getByRole('button', { name: /delete/i });
     fireEvent.click(deleteButton);
 
     // Click delete button in confirmation dialog
-    const confirmDeleteButton = screen.getByText('Delete');
-    fireEvent.click(confirmDeleteButton);
+    const confirmButtons = screen.getAllByRole('button', { name: /delete/i });
+    // The confirm button should be the second one (first is the sidebar delete button)
+    fireEvent.click(confirmButtons[1]);
 
     expect(mockOnDelete).toHaveBeenCalledWith('test-poi-1');
     expect(mockOnClose).toHaveBeenCalled();
@@ -83,12 +97,16 @@ describe('POIDetailsSidebar', () => {
 
     const mockOnClose = vi.fn();
     const mockOnDelete = vi.fn();
+    const mockOnUpdate = vi.fn();
+    const mockOnSave = vi.fn();
 
     render(
       <POIDetailsSidebar 
         poi={poiWithNegativeCoords} 
         onClose={mockOnClose} 
-        onDelete={mockOnDelete} 
+        onDelete={mockOnDelete}
+        onUpdate={mockOnUpdate}
+        onSave={mockOnSave}
       />
     );
 
@@ -98,12 +116,16 @@ describe('POIDetailsSidebar', () => {
   it('displays creation timestamp correctly', () => {
     const mockOnClose = vi.fn();
     const mockOnDelete = vi.fn();
+    const mockOnUpdate = vi.fn();
+    const mockOnSave = vi.fn();
 
     render(
       <POIDetailsSidebar 
         poi={mockPOI} 
         onClose={mockOnClose} 
-        onDelete={mockOnDelete} 
+        onDelete={mockOnDelete}
+        onUpdate={mockOnUpdate}
+        onSave={mockOnSave}
       />
     );
 
@@ -120,16 +142,20 @@ describe('POIDetailsSidebar', () => {
 
     const mockOnClose = vi.fn();
     const mockOnDelete = vi.fn();
+    const mockOnUpdate = vi.fn();
+    const mockOnSave = vi.fn();
 
     render(
       <POIDetailsSidebar 
         poi={resourcePOI} 
         onClose={mockOnClose} 
-        onDelete={mockOnDelete} 
+        onDelete={mockOnDelete}
+        onUpdate={mockOnUpdate}
+        onSave={mockOnSave}
       />
     );
 
-    expect(screen.getByText('Copper Ore')).toBeInTheDocument();
-    expect(screen.getByText('Resource')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Copper Ore')).toBeInTheDocument();
+    expect(screen.getByText('💎 Resource')).toBeInTheDocument();
   });
 });

@@ -19,11 +19,14 @@ describe('POIDetailsSidebar Delete Functionality', () => {
     y: 200,
     notes: 'Test notes',
     createdAt: new Date('2023-01-01'),
-    updatedAt: new Date('2023-01-01')
+    updatedAt: new Date('2023-01-01'),
+    definitionMode: 'coordinates' as const
   };
 
   const mockOnClose = vi.fn();
   const mockOnDelete = vi.fn();
+  const mockOnUpdate = vi.fn();
+  const mockOnSave = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -35,11 +38,13 @@ describe('POIDetailsSidebar Delete Functionality', () => {
       <POIDetailsSidebar 
         poi={mockPOI} 
         onClose={mockOnClose} 
-        onDelete={mockOnDelete} 
+        onDelete={mockOnDelete}
+        onUpdate={mockOnUpdate}
+        onSave={mockOnSave}
       />
     );
 
-    const deleteButton = screen.getByRole('button', { name: /delete poi/i });
+    const deleteButton = screen.getByRole('button', { name: /delete/i });
     expect(deleteButton).toBeInTheDocument();
   });
 
@@ -48,11 +53,13 @@ describe('POIDetailsSidebar Delete Functionality', () => {
       <POIDetailsSidebar 
         poi={mockPOI} 
         onClose={mockOnClose} 
-        onDelete={mockOnDelete} 
+        onDelete={mockOnDelete}
+        onUpdate={mockOnUpdate}
+        onSave={mockOnSave}
       />
     );
 
-    const deleteButton = screen.getByRole('button', { name: /delete poi/i });
+    const deleteButton = screen.getByRole('button', { name: /delete/i });
     fireEvent.click(deleteButton);
 
     // Check that the confirmation dialog appears
@@ -65,11 +72,13 @@ describe('POIDetailsSidebar Delete Functionality', () => {
       <POIDetailsSidebar 
         poi={mockPOI} 
         onClose={mockOnClose} 
-        onDelete={mockOnDelete} 
+        onDelete={mockOnDelete}
+        onUpdate={mockOnUpdate}
+        onSave={mockOnSave}
       />
     );
 
-    const deleteButton = screen.getByRole('button', { name: /delete poi/i });
+    const deleteButton = screen.getByRole('button', { name: /delete/i });
     fireEvent.click(deleteButton);
 
     // Click cancel button
@@ -85,16 +94,19 @@ describe('POIDetailsSidebar Delete Functionality', () => {
       <POIDetailsSidebar 
         poi={mockPOI} 
         onClose={mockOnClose} 
-        onDelete={mockOnDelete} 
+        onDelete={mockOnDelete}
+        onUpdate={mockOnUpdate}
+        onSave={mockOnSave}
       />
     );
 
-    const deleteButton = screen.getByRole('button', { name: /delete poi/i });
+    const deleteButton = screen.getByRole('button', { name: /delete/i });
     fireEvent.click(deleteButton);
 
     // Click delete button in confirmation dialog
-    const confirmDeleteButton = screen.getByText('Delete');
-    fireEvent.click(confirmDeleteButton);
+    const confirmButtons = screen.getAllByRole('button', { name: /delete/i });
+    // The confirm button should be the second one (first is the sidebar delete button)
+    fireEvent.click(confirmButtons[1]);
 
     expect(mockOnDelete).toHaveBeenCalledWith('test-poi-1');
     expect(mockOnClose).toHaveBeenCalled();
@@ -104,11 +116,13 @@ describe('POIDetailsSidebar Delete Functionality', () => {
     render(
       <POIDetailsSidebar 
         poi={mockPOI} 
-        onClose={mockOnClose} 
+        onClose={mockOnClose}
+        onUpdate={mockOnUpdate}
+        onSave={mockOnSave}
       />
     );
 
-    const deleteButton = screen.queryByRole('button', { name: /delete poi/i });
+    const deleteButton = screen.queryByRole('button', { name: /delete/i });
     expect(deleteButton).not.toBeInTheDocument();
   });
 
@@ -122,11 +136,13 @@ describe('POIDetailsSidebar Delete Functionality', () => {
       <POIDetailsSidebar 
         poi={specialPOI} 
         onClose={mockOnClose} 
-        onDelete={mockOnDelete} 
+        onDelete={mockOnDelete}
+        onUpdate={mockOnUpdate}
+        onSave={mockOnSave}
       />
     );
 
-    const deleteButton = screen.getByRole('button', { name: /delete poi/i });
+    const deleteButton = screen.getByRole('button', { name: /delete/i });
     fireEvent.click(deleteButton);
 
     // Check that the confirmation dialog appears with special characters

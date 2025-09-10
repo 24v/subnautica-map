@@ -577,6 +577,43 @@ textarea:disabled {
 
 .map-actions {
   margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.import-export-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.import-map-btn {
+  background-color: #003300;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.import-map-btn:hover {
+  background-color: #004400;
+  box-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
+}
+
+.import-error {
+  background-color: #330000;
+  color: #ff6666;
+  border: 1px solid #ff3333;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-family: monospace;
+  font-size: 12px;
 }
 
 .create-map-btn {
@@ -655,14 +692,14 @@ textarea:disabled {
   color: #888;
 }
 
-.map-actions {
+.map-item .map-actions {
   display: flex;
   gap: 8px;
-  align-items: center;
 }
 
-.edit-btn,
-.delete-btn {
+.map-item .export-btn,
+.map-item .edit-btn,
+.map-item .delete-btn {
   background-color: #003300;
   color: #00ff00;
   border: 1px solid #00ff00;

@@ -235,6 +235,67 @@ export class MapStorageService {
     
     return currentMap;
   }
+
+  /**
+   * Export a map to JSON format
+   */
+  exportMap(mapId: string): string | null {
+    const map = this.getMap(mapId);
+    if (!map) {
+      return null;
+    }
+
+    const exportData = {
+      version: '1.0',
+      exportedAt: new Date().toISOString(),
+      map: {
+        name: map.name,
+        pois: map.pois,
+        createdAt: map.createdAt.toISOString(),
+        updatedAt: map.updatedAt.toISOString()
+      }
+    };
+
+    return JSON.stringify(exportData, null, 2);
+  }
+
+  /**
+   * Import a map from JSON format
+   */
+  importMap(jsonData: string): POIMap | null {
+    try {
+      const importData = JSON.parse(jsonData);
+      
+      // Validate the import data structure
+      if (!importData.map || !importData.map.name || !Array.isArray(importData.map.pois)) {
+        throw new Error('Invalid map data format');
+      }
+
+      // Create a new map with imported data
+      const newMapId = `map-${Date.now()}`;
+      const importedMap: POIMap = {
+        id: newMapId,
+        name: importData.map.name,
+        pois: importData.map.pois.map((poi: any) => ({
+          ...poi,
+          createdAt: new Date(poi.createdAt),
+          updatedAt: new Date(poi.updatedAt)
+        })),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      // Save the imported map
+      const storage = this.getStorageData();
+      storage.maps[newMapId] = importedMap;
+      this.saveStorageData(storage);
+
+      return importedMap;
+    } catch (error) {
+      console.error('Failed to import map:', error);
+      return null;
+    }
+  }
 }
 
 // Export singleton instance

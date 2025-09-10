@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 interface POIDetailsSidebarProps {
   poi: POI | null;
   onClose: () => void;
-  onDelete: (poiId: string) => void;
+  onDelete?: (poiId: string) => void;
   onUpdate: (poi: POI) => void;
   onSave: (poi: POI) => void;
   isProvisional?: boolean;
@@ -102,7 +102,9 @@ export default function POIDetailsSidebar({
   };
 
   const handleConfirmDelete = () => {
-    onDelete(currentPOI.id);
+    if (onDelete) {
+      onDelete(currentPOI.id);
+    }
     onClose();
     setShowConfirmDialog(false);
   };
@@ -327,12 +329,14 @@ export default function POIDetailsSidebar({
                 >
                   Update
                 </button>
-                <button 
-                  className="delete-btn" 
-                  onClick={handleDeleteClick}
-                >
-                  Delete
-                </button>
+                {onDelete && (
+                  <button 
+                    className="delete-btn" 
+                    onClick={handleDeleteClick}
+                  >
+                    Delete
+                  </button>
+                )}
               </>
             ) : (
               <>

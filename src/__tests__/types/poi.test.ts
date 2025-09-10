@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { POI, POIType, POI_METADATA, LIFEBOAT_5, Bearing } from '../../types/poi';
+import { POI, POIType, POI_METADATA, LIFEBOAT_5, BearingRecord } from '../../types/poi';
 
 describe('POI Types', () => {
   it('should have all required POI fields', () => {
@@ -12,7 +12,8 @@ describe('POI Types', () => {
       notes: 'Test notes',
       depth: 50,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      definitionMode: 'coordinates' as const
     };
 
     expect(testPOI.id).toBe('test-1');
@@ -43,24 +44,23 @@ describe('POI Types', () => {
   it('should have valid Lifeboat 5 default POI', () => {
     expect(LIFEBOAT_5.id).toBe('lifeboat-5');
     expect(LIFEBOAT_5.name).toBe('Lifeboat 5');
-    expect(LIFEBOAT_5.type).toBe('landmark');
+    expect(LIFEBOAT_5.type).toBe('lifeboat');
     expect(LIFEBOAT_5.x).toBe(0);
     expect(LIFEBOAT_5.y).toBe(0);
     expect(LIFEBOAT_5.depth).toBe(0);
   });
 
   it('should have valid bearing structure', () => {
-    const testBearing: Bearing = {
+    const testBearing: BearingRecord = {
       id: 'bearing-1',
-      fromPOIId: 'lifeboat-5',
-      toPOIId: 'test-wreck',
-      direction: 45,
+      referencePOIId: 'lifeboat-5',
+      bearing: 45,
       distance: 500,
       createdAt: new Date()
     };
 
-    expect(testBearing.direction).toBeGreaterThanOrEqual(0);
-    expect(testBearing.direction).toBeLessThan(360);
+    expect(testBearing.bearing).toBeGreaterThanOrEqual(0);
+    expect(testBearing.bearing).toBeLessThan(360);
     expect(testBearing.distance).toBeGreaterThan(0);
   });
 });

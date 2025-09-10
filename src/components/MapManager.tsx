@@ -19,6 +19,7 @@ export default function MapManager({ isOpen, onClose, currentMapId, onMapSwitch,
   const [editingMapId, setEditingMapId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  const [importError, setImportError] = useState<string | null>(null);
 
   // Load maps when modal opens
   useEffect(() => {
@@ -41,11 +42,13 @@ export default function MapManager({ isOpen, onClose, currentMapId, onMapSwitch,
 
   const handleSaveEdit = () => {
     if (editingMapId && editingName.trim()) {
+      console.log('Saving map edit - mapId:', editingMapId, 'newName:', editingName.trim(), 'currentMapId:', currentMapId);
       mapStorage.updateMap(editingMapId, { name: editingName.trim() });
       setMaps(mapStorage.getAllMaps());
       
       // Notify parent if this is the current map
       if (editingMapId === currentMapId) {
+        console.log('Calling onMapUpdate for current map');
         onMapUpdate?.(editingMapId);
       }
       
@@ -59,24 +62,64 @@ export default function MapManager({ isOpen, onClose, currentMapId, onMapSwitch,
     setEditingName('');
   };
 
-  const handleDeleteMap = (mapId: string) => {
-    mapStorage.deleteMap(mapId);
-    const updatedMaps = mapStorage.getAllMaps();
-    setMaps(updatedMaps);
-    
-    // If we deleted the current map, switch to the first available map
-    if (mapId === currentMapId) {
-      if (updatedMaps.length > 0) {
-        onMapSwitch(updatedMaps[0].id);
-      } else {
-        // Create a new map if no maps left
-        const newMap = mapStorage.createMap('Map 1');
-        setMaps([newMap]);
-        onMapSwitch(newMap.id);
+  const handleConfirmDelete = () => {
+    if (showDeleteConfirm) {
+      mapStorage.deleteMap(showDeleteConfirm);
+      setMaps(mapStorage.getAllMaps());
+      
+      // If we deleted the current map, switch to another one
+      if (showDeleteConfirm === currentMapId) {
+        const remainingMaps = mapStorage.getAllMaps();
+        if (remainingMaps.length > 0) {
+          onMapSwitch(remainingMaps[0].id);
+        }
       }
+      
+      setShowDeleteConfirm(null);
     }
-    
-    setShowDeleteConfirm(null);
+  };
+
+  const handleExportMap = (mapId: string) => {
+    const exportData = mapStorage.exportMap(mapId);
+    if (exportData) {
+      const map = mapStorage.getMap(mapId);
+      const fileName = `${map?.name || 'map'}-export.json`;
+      
+      // Create and trigger download
+      const blob = new Blob([exportData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  };
+
+  const handleImportMap = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      if (content) {
+        const importedMap = mapStorage.importMap(content);
+        if (importedMap) {
+          setMaps(mapStorage.getAllMaps());
+          setImportError(null);
+          // Switch to the imported map
+          onMapSwitch(importedMap.id);
+        } else {
+          setImportError('Failed to import map. Please check the file format.');
+        }
+      }
+      // Reset the input
+      event.target.value = '';
+    };
+    reader.readAsText(file);
   };
 
   const handleMapSwitch = (mapId: string) => {
@@ -100,7 +143,28 @@ export default function MapManager({ isOpen, onClose, currentMapId, onMapSwitch,
             <button className="create-map-btn" onClick={handleCreateMap}>
               + Create New Map
             </button>
+            <div className="import-export-actions">
+              <input
+                type="file"
+                accept=".json"
+                onChange={handleImportMap}
+                style={{ display: 'none' }}
+                id="import-file-input"
+              />
+              <button 
+                className="import-map-btn"
+                onClick={() => document.getElementById('import-file-input')?.click()}
+              >
+                📁 Import Map
+              </button>
+            </div>
           </div>
+
+          {importError && (
+            <div className="import-error">
+              {importError}
+            </div>
+          )}
 
           <div className="maps-list">
             {maps.map((map) => (
@@ -154,6 +218,13 @@ export default function MapManager({ isOpen, onClose, currentMapId, onMapSwitch,
                   {editingMapId !== map.id && (
                     <>
                       <button 
+                        className="export-btn"
+                        onClick={() => handleExportMap(map.id)}
+                        title="Export map"
+                      >
+                        📤
+                      </button>
+                      <button 
                         className="edit-btn"
                         onClick={() => handleStartEdit(map)}
                         title="Rename map"
@@ -184,7 +255,7 @@ export default function MapManager({ isOpen, onClose, currentMapId, onMapSwitch,
               <div className="delete-confirm-actions">
                 <button 
                   className="confirm-delete-btn"
-                  onClick={() => handleDeleteMap(showDeleteConfirm)}
+                  onClick={handleConfirmDelete}
                 >
                   Delete
                 </button>

@@ -32,18 +32,27 @@
 - [x] Remove fixed coordinates mode - all POIs use bearing-based positioning
 - [x] Handle POI deletion with bearing cleanup and coordinate recalculation
 
-## Phase 5: POI Storage
-- [ ] Save POIs to localStorage
-- [ ] Load POIs from localStorage on startup
-- [ ] Export POI list as JSON
-- [ ] Import POI list from JSON
+## Phase 5: Map Management ✅
+- [x] Multiple map support with localStorage persistence
+- [x] Map switching functionality
+- [x] Map renaming with real-time UI updates
+- [x] Map deletion with confirmation dialogs
+- [x] Default map creation ("Map 1")
+- [x] Map management modal with terminal theme
+- [x] Synchronization between modal and main view
 
-## Phase 6: POI Management
+## Phase 6: POI Storage ✅
+- [x] Save POIs to localStorage per map
+- [x] Load POIs from localStorage on startup
+- [x] Export POI list as JSON
+- [x] Import POI list from JSON
+
+## Phase 7: POI Management
 - [x] Edit POI name and notes (completed in sidebar)
 - [ ] Filter POIs by type (wreck, resource, biome, etc.)
 - [ ] Search POIs by name
 
-## Phase 7: UI Polish (After Core Features Work)
+## Phase 8: UI Polish (After Core Features Work)
 - [ ] Subnautica-themed colors (blue/teal/orange)
 - [x] Custom POI icons by type (emoji rendering implemented)
 - [ ] Smooth animations for interactions

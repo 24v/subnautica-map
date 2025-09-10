@@ -478,8 +478,11 @@ export default function MapCanvas({
   };
 
   const handleMapUpdate = (mapId: string) => {
+    console.log('handleMapUpdate called for mapId:', mapId, 'currentMapId:', currentMapId);
     const map = mapStorage.getMap(mapId);
+    console.log('Retrieved map:', map);
     if (map && map.id === currentMapId) {
+      console.log('Updating current map name from', currentMapName, 'to', map.name);
       setCurrentMapName(map.name);
     }
   };
