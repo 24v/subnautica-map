@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
-import { POI, POI_METADATA } from '../types/poi';
+import { POI, POI_METADATA, LIFEBOAT_5 } from '../types/poi';
+import { recalculatePOICoordinates } from '../utils/bearingCalculations';
 import POIDetailsSidebar from './POIDetailsSidebar';
 
 interface MapCanvasProps {
@@ -18,7 +19,7 @@ export default function MapCanvas({
   onResetView
 }: MapCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [pois, setPois] = useState<POI[]>([]);
+  const [pois, setPois] = useState<POI[]>([LIFEBOAT_5]);
   const [selectedPOI, setSelectedPOI] = useState<POI | null>(null);
   const [isAddingPOI, setIsAddingPOI] = useState(false);
   const [newPOICoordinates, setNewPOICoordinates] = useState<{x: number, y: number} | null>(null);
@@ -90,23 +91,7 @@ export default function MapCanvas({
 
     ctx.restore();
 
-    // Draw origin point (Lifeboat 5) in screen coordinates to match POI zoom behavior
-    const originScreenX = width / 2 + panOffset.x;
-    const originScreenY = height / 2 + panOffset.y;
-    
-    ctx.fillStyle = '#10b981';
-    ctx.strokeStyle = '#06b6d4';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(originScreenX, originScreenY, 8, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.stroke();
-
-    // Label origin
-    ctx.fillStyle = '#22d3ee';
-    ctx.font = '12px monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText('Lifeboat 5', originScreenX, originScreenY - 15);
+    // Origin point (Lifeboat 5) is now rendered as a regular POI with special emoji
 
     // Draw POIs in screen coordinates
     pois.forEach(poi => {
@@ -317,18 +302,29 @@ export default function MapCanvas({
   };
 
   const handlePOIUpdate = (updatedPOI: POI) => {
-    setPois(prev => prev.map(poi => poi.id === updatedPOI.id ? updatedPOI : poi));
-    setSelectedPOI(updatedPOI); // Update the selected POI to reflect changes
+    // Recalculate coordinates if POI uses bearings
+    const recalculatedPOI = updatedPOI.definitionMode === 'bearings' 
+      ? recalculatePOICoordinates(updatedPOI, pois)
+      : updatedPOI;
+    
+    setPois(prev => prev.map(poi => poi.id === recalculatedPOI.id ? recalculatedPOI : poi));
+    setSelectedPOI(recalculatedPOI); // Update the selected POI to reflect changes
   };
 
   const handlePOISave = (newPOI: POI) => {
     // Add coordinates from newPOICoordinates if this is a new POI
     if (isAddingPOI && newPOICoordinates) {
-      const poiWithCoords = {
+      let poiWithCoords = {
         ...newPOI,
         x: newPOICoordinates.x,
         y: newPOICoordinates.y
       };
+      
+      // Recalculate coordinates if POI uses bearings
+      if (newPOI.definitionMode === 'bearings') {
+        poiWithCoords = recalculatePOICoordinates(poiWithCoords, pois);
+      }
+      
       setPois(prev => [...prev, poiWithCoords]);
       setIsAddingPOI(false);
       setNewPOICoordinates(null);
@@ -382,6 +378,7 @@ export default function MapCanvas({
           onSave={handlePOISave}
           isProvisional={isAddingPOI}
           coordinates={newPOICoordinates}
+          allPOIs={pois}
         />
       )}
     </>

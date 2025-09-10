@@ -332,3 +332,130 @@ body {
   background-color: #004400;
   box-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
 }
+
+/* Bearing System UI */
+.mode-toggle {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.mode-btn {
+  flex: 1;
+  background-color: #1f2937;
+  color: #9ca3af;
+  border: 1px solid #374151;
+  padding: 6px 12px;
+  font-family: monospace;
+  font-size: 11px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mode-btn:hover:not(:disabled) {
+  background-color: #374151;
+  color: #00ff00;
+}
+
+.mode-btn.active {
+  background-color: #003300;
+  color: #00ff00;
+  border-color: #00ff00;
+}
+
+.mode-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bearings-section {
+  margin-top: 8px;
+}
+
+.bearing-entry {
+  margin-bottom: 8px;
+  padding: 8px;
+  background-color: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 4px;
+}
+
+.bearing-controls {
+  display: grid;
+  grid-template-columns: 1fr 80px 80px 30px;
+  gap: 6px;
+  align-items: center;
+}
+
+.bearing-select,
+.bearing-input {
+  background-color: #111;
+  color: #00ff00;
+  border: 1px solid #333;
+  padding: 4px 6px;
+  font-family: monospace;
+  font-size: 11px;
+  border-radius: 3px;
+}
+
+.bearing-select:focus,
+.bearing-input:focus {
+  outline: none;
+  border-color: #00ff00;
+  box-shadow: 0 0 3px rgba(0, 255, 0, 0.3);
+}
+
+.remove-bearing-btn {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.remove-bearing-btn:hover {
+  background-color: #b91c1c;
+}
+
+.add-bearing-btn {
+  background-color: #003300;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  padding: 6px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 11px;
+  transition: all 0.2s;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.add-bearing-btn:hover:not(:disabled) {
+  background-color: #004400;
+  box-shadow: 0 0 5px rgba(0, 255, 0, 0.4);
+}
+
+.add-bearing-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.calculated-coordinates {
+  margin-top: 8px;
+  padding: 4px 8px;
+  background-color: #0f172a;
+  border: 1px solid #4ecdc4;
+  border-radius: 3px;
+  text-align: center;
+}
+
+.calculated-coordinates small {
+  color: #4ecdc4;
+  font-family: monospace;
+}

@@ -23,6 +23,7 @@
 - [x] Open a dialog (in details sidebar) when creating a new POI (and allow cancelling). Right-click to create POI with ADD sidebar mode.
 
 ## Phase 4: Bearing System
+- [x] Create foundational data types
 - [ ] Add bearing input form (compass direction + distance)
 - [ ] Calculate POI coordinates from bearing + reference point
 - [ ] Show bearing lines on map

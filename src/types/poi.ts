@@ -4,14 +4,15 @@
 
 export type POIType = 
   | 'wreck'
-  | 'structure' 
-  | 'biome'
+  | 'structure'
   | 'resource'
-  | 'cave'
+  | 'biome'
   | 'landmark'
   | 'hazard'
   | 'base'
-  | 'buoy';
+  | 'buoy'
+  | 'lifeboat'
+  | 'cave';
 
 export type POIDefinitionMode = 'coordinates' | 'bearings';
 
@@ -45,18 +46,19 @@ export const POI_METADATA: Record<POIType, { emoji: string; color: string; label
   structure: { emoji: '🏭', color: '#4ecdc4', label: 'Structure' },
   biome: { emoji: '🌊', color: '#45b7d1', label: 'Biome' },
   resource: { emoji: '💎', color: '#96ceb4', label: 'Resource' },
-  cave: { emoji: '🕳️', color: '#786fa6', label: 'Cave' },
+  lifeboat: { emoji: '⭐', color: '#ffd700', label: 'Lifeboat' },
   landmark: { emoji: '🎯', color: '#f9ca24', label: 'Landmark' },
   hazard: { emoji: '⚠️', color: '#f0932b', label: 'Hazard' },
   base: { emoji: '🔧', color: '#6c5ce7', label: 'Player Base' },
-  buoy: { emoji: '📍', color: '#a29bfe', label: 'Buoy' }
+  buoy: { emoji: '📍', color: '#a29bfe', label: 'Buoy' },
+  cave: { emoji: '🕳️', color: '#786fa6', label: 'Cave' }
 };
 
 // Default POI for Lifeboat 5 (origin point)
 export const LIFEBOAT_5: POI = {
   id: 'lifeboat-5',
   name: 'Lifeboat 5',
-  type: 'landmark',
+  type: 'lifeboat',
   x: 0,
   y: 0,
   notes: 'Starting location - coordinate system origin',
