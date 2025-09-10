@@ -120,7 +120,7 @@ export class MapStorageService {
     
     // If still no current map, create a default one
     if (!storage.currentMapId) {
-      return this.createMap('Default Map');
+      return this.createMap('Map 1');
     }
     
     return this.getMap(storage.currentMapId);
@@ -225,12 +225,12 @@ export class MapStorageService {
    */
   initialize(): POIMap {
     if (!this.hasAnyMaps()) {
-      return this.createMap('Default Map');
+      return this.createMap('Map 1');
     }
     
     const currentMap = this.getCurrentMap();
     if (!currentMap) {
-      return this.createMap('Default Map');
+      return this.createMap('Map 1');
     }
     
     return currentMap;

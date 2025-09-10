@@ -477,6 +477,13 @@ export default function MapCanvas({
     }
   };
 
+  const handleMapUpdate = (mapId: string) => {
+    const map = mapStorage.getMap(mapId);
+    if (map && map.id === currentMapId) {
+      setCurrentMapName(map.name);
+    }
+  };
+
   return (
     <>
       <div className="canvas-container">
@@ -534,6 +541,7 @@ export default function MapCanvas({
         onClose={() => setShowMapManager(false)}
         currentMapId={currentMapId}
         onMapSwitch={handleMapSwitch}
+        onMapUpdate={handleMapUpdate}
       />
     </>
   );

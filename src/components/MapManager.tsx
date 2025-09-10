@@ -11,9 +11,10 @@ interface MapManagerProps {
   onClose: () => void;
   currentMapId: string | null;
   onMapSwitch: (mapId: string) => void;
+  onMapUpdate?: (mapId: string) => void;
 }
 
-export default function MapManager({ isOpen, onClose, currentMapId, onMapSwitch }: MapManagerProps) {
+export default function MapManager({ isOpen, onClose, currentMapId, onMapSwitch, onMapUpdate }: MapManagerProps) {
   const [maps, setMaps] = useState<POIMap[]>([]);
   const [editingMapId, setEditingMapId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
@@ -42,6 +43,12 @@ export default function MapManager({ isOpen, onClose, currentMapId, onMapSwitch 
     if (editingMapId && editingName.trim()) {
       mapStorage.updateMap(editingMapId, { name: editingName.trim() });
       setMaps(mapStorage.getAllMaps());
+      
+      // Notify parent if this is the current map
+      if (editingMapId === currentMapId) {
+        onMapUpdate?.(editingMapId);
+      }
+      
       setEditingMapId(null);
       setEditingName('');
     }
@@ -63,7 +70,7 @@ export default function MapManager({ isOpen, onClose, currentMapId, onMapSwitch 
         onMapSwitch(updatedMaps[0].id);
       } else {
         // Create a new map if no maps left
-        const newMap = mapStorage.createMap('Default Map');
+        const newMap = mapStorage.createMap('Map 1');
         setMaps([newMap]);
         onMapSwitch(newMap.id);
       }
@@ -100,6 +107,17 @@ export default function MapManager({ isOpen, onClose, currentMapId, onMapSwitch 
               <div 
                 key={map.id} 
                 className={`map-item ${map.id === currentMapId ? 'current' : ''}`}
+                onClick={(e) => {
+                  // Don't switch maps if clicking on edit/delete buttons or input fields
+                  if (editingMapId === map.id || 
+                      (e.target as HTMLElement).closest('.map-actions') ||
+                      (e.target as HTMLElement).tagName === 'INPUT' ||
+                      (e.target as HTMLElement).tagName === 'BUTTON') {
+                    return;
+                  }
+                  handleMapSwitch(map.id);
+                }}
+                style={{ cursor: editingMapId === map.id ? 'default' : 'pointer' }}
               >
                 <div className="map-info">
                   {editingMapId === map.id ? (
@@ -121,7 +139,7 @@ export default function MapManager({ isOpen, onClose, currentMapId, onMapSwitch 
                     </div>
                   ) : (
                     <>
-                      <div className="map-name" onClick={() => handleMapSwitch(map.id)}>
+                      <div className="map-name">
                         {map.name}
                         {map.id === currentMapId && <span className="current-indicator"> (current)</span>}
                       </div>
@@ -146,7 +164,6 @@ export default function MapManager({ isOpen, onClose, currentMapId, onMapSwitch 
                         className="delete-btn"
                         onClick={() => setShowDeleteConfirm(map.id)}
                         title="Delete map"
-                        disabled={maps.length === 1}
                       >
                         🗑️
                       </button>
