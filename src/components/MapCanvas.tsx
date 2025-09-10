@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import { POI, POI_METADATA, BearingRecord } from '../types/poi';
-import { recalculatePOICoordinates } from '../utils/bearingCalculations';
+import { recalculatePOICoordinates, recalculateAllPOICoordinates } from '../utils/bearingCalculations';
 import { mapStorage } from '../services/mapStorage';
 import POIDetailsSidebar from './POIDetailsSidebar';
 import MapManager from './MapManager';
@@ -463,13 +463,17 @@ export default function MapCanvas({
   };
 
   const handlePOIUpdate = (updatedPOI: POI) => {
-    // Recalculate coordinates if POI uses bearings
-    const recalculatedPOI = updatedPOI.definitionMode === 'bearings' 
-      ? recalculatePOICoordinates(updatedPOI, pois)
-      : updatedPOI;
+    // Update the POI first
+    const updatedPois = pois.map(poi => poi.id === updatedPOI.id ? updatedPOI : poi);
     
-    setPois(prev => prev.map(poi => poi.id === recalculatedPOI.id ? recalculatedPOI : poi));
-    setSelectedPOI(recalculatedPOI); // Update the selected POI to reflect changes
+    // Recalculate all POI coordinates to handle dependency chains
+    const recalculatedPois = recalculateAllPOICoordinates(updatedPois);
+    
+    setPois(recalculatedPois);
+    
+    // Find and set the updated selected POI
+    const updatedSelectedPOI = recalculatedPois.find(poi => poi.id === updatedPOI.id);
+    setSelectedPOI(updatedSelectedPOI || updatedPOI);
   };
 
   const handlePOISave = (newPOI: POI) => {
@@ -481,21 +485,27 @@ export default function MapCanvas({
         y: newPOICoordinates.y
       };
       
-      // Recalculate coordinates if POI uses bearings
-      if (newPOI.definitionMode === 'bearings') {
-        poiWithCoords = recalculatePOICoordinates(poiWithCoords, pois);
-      }
+      // Add the new POI to the list first
+      const updatedPois = [...pois, poiWithCoords];
       
-      setPois(prev => [...prev, poiWithCoords]);
-      setIsAddingPOI(false);
-      setNewPOICoordinates(null);
-      setSelectedPOI(null); // Close sidebar after saving
-      onPOIAdd?.(poiWithCoords);
+      // Recalculate all POI coordinates to handle any new dependencies
+      const recalculatedPois = recalculateAllPOICoordinates(updatedPois);
+      
+      setPois(recalculatedPois);
+      
+      // Find the newly added POI after recalculation
+      const finalPOI = recalculatedPois.find(poi => poi.id === newPOI.id) || poiWithCoords;
+      onPOIAdd?.(finalPOI);
     }
+    
+    setIsAddingPOI(false);
+    setNewPOICoordinates(null);
+    setSelectedPOI(null);
   };
 
   const handleSidebarClose = () => {
     setSelectedPOI(null);
+    
     // If closing sidebar in ADD mode, cancel it
     if (isAddingPOI) {
       setIsAddingPOI(false);
@@ -506,7 +516,9 @@ export default function MapCanvas({
   const handleMapSwitch = (mapId: string) => {
     const map = mapStorage.getMap(mapId);
     if (map) {
-      setPois(map.pois);
+      // Recalculate all coordinates when loading a map to ensure consistency
+      const recalculatedPois = recalculateAllPOICoordinates(map.pois);
+      setPois(recalculatedPois);
       setCurrentMapId(map.id);
       setCurrentMapName(map.name);
     }

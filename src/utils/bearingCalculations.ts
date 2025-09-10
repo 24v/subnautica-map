@@ -203,3 +203,176 @@ export function validateBearingRecords(
 
   return errors
 }
+
+/**
+ * Build dependency graph showing which POIs depend on which other POIs
+ * @param allPOIs Array of all POIs
+ * @returns Map of POI ID to array of dependent POI IDs
+ */
+export function buildDependencyGraph(allPOIs: POI[]): Map<string, string[]> {
+  const dependents = new Map<string, string[]>()
+  
+  // Initialize empty arrays for all POIs
+  allPOIs.forEach(poi => {
+    dependents.set(poi.id, [])
+  })
+  
+  // Build dependency relationships
+  allPOIs.forEach(poi => {
+    if (poi.definitionMode === 'bearings' && poi.bearingRecords) {
+      poi.bearingRecords.forEach(bearing => {
+        const referencePOI = bearing.referencePOIId
+        if (dependents.has(referencePOI)) {
+          dependents.get(referencePOI)!.push(poi.id)
+        }
+      })
+    }
+  })
+  
+  return dependents
+}
+
+/**
+ * Detect circular references in POI dependency graph
+ * @param allPOIs Array of all POIs
+ * @returns Array of circular reference chains found
+ */
+export function detectCircularReferences(allPOIs: POI[]): string[][] {
+  const dependencyGraph = buildDependencyGraph(allPOIs)
+  const visited = new Set<string>()
+  const recursionStack = new Set<string>()
+  const cycles: string[][] = []
+  
+  function dfs(poiId: string, path: string[]): void {
+    if (recursionStack.has(poiId)) {
+      // Found a cycle - extract the cycle from the path
+      const cycleStart = path.indexOf(poiId)
+      if (cycleStart >= 0) {
+        cycles.push([...path.slice(cycleStart), poiId])
+      }
+      return
+    }
+    
+    if (visited.has(poiId)) {
+      return
+    }
+    
+    visited.add(poiId)
+    recursionStack.add(poiId)
+    
+    const dependents = dependencyGraph.get(poiId) || []
+    dependents.forEach(dependentId => {
+      dfs(dependentId, [...path, poiId])
+    })
+    
+    recursionStack.delete(poiId)
+  }
+  
+  // Check each POI as a potential cycle start
+  allPOIs.forEach(poi => {
+    if (!visited.has(poi.id)) {
+      dfs(poi.id, [])
+    }
+  })
+  
+  return cycles
+}
+
+/**
+ * Topologically sort POIs to determine recalculation order
+ * @param allPOIs Array of all POIs
+ * @returns Array of POI IDs in dependency order (dependencies first)
+ */
+export function topologicalSort(allPOIs: POI[]): string[] {
+  const dependencyGraph = buildDependencyGraph(allPOIs)
+  const inDegree = new Map<string, number>()
+  const result: string[] = []
+  const queue: string[] = []
+  
+  // Initialize in-degree count
+  allPOIs.forEach(poi => {
+    inDegree.set(poi.id, 0)
+  })
+  
+  // Calculate in-degrees (how many POIs depend on each POI)
+  allPOIs.forEach(poi => {
+    if (poi.definitionMode === 'bearings' && poi.bearingRecords) {
+      poi.bearingRecords.forEach(() => {
+        const current = inDegree.get(poi.id) || 0
+        inDegree.set(poi.id, current + 1)
+      })
+    }
+  })
+  
+  // Find POIs with no dependencies (in-degree 0)
+  inDegree.forEach((degree, poiId) => {
+    if (degree === 0) {
+      queue.push(poiId)
+    }
+  })
+  
+  // Process queue
+  while (queue.length > 0) {
+    const currentId = queue.shift()!
+    result.push(currentId)
+    
+    // Reduce in-degree for dependent POIs
+    const dependents = dependencyGraph.get(currentId) || []
+    dependents.forEach(dependentId => {
+      const newDegree = (inDegree.get(dependentId) || 0) - 1
+      inDegree.set(dependentId, newDegree)
+      
+      if (newDegree === 0) {
+        queue.push(dependentId)
+      }
+    })
+  }
+  
+  return result
+}
+
+/**
+ * Recalculate coordinates for all POIs in dependency order
+ * @param allPOIs Array of all POIs
+ * @returns Array of POIs with updated coordinates
+ */
+export function recalculateAllPOICoordinates(allPOIs: POI[]): POI[] {
+  // Check for circular references
+  const cycles = detectCircularReferences(allPOIs)
+  if (cycles.length > 0) {
+    console.warn('Circular references detected:', cycles)
+    // For now, just log and continue - could implement cycle breaking logic
+  }
+  
+  // Get processing order
+  const processingOrder = topologicalSort(allPOIs)
+  
+  // Create a working copy of POIs
+  const updatedPOIs = new Map(allPOIs.map(poi => [poi.id, { ...poi }]))
+  
+  // Process POIs in dependency order
+  processingOrder.forEach(poiId => {
+    const poi = updatedPOIs.get(poiId)
+    if (!poi) return
+    
+    if (poi.definitionMode === 'bearings' && poi.bearingRecords && poi.bearingRecords.length > 0) {
+      try {
+        // Use current state of all POIs for calculation
+        const currentPOIs = Array.from(updatedPOIs.values())
+        const newCoords = calculatePOICoordinates(poi.bearingRecords, currentPOIs)
+        
+        // Update the POI with new coordinates
+        updatedPOIs.set(poiId, {
+          ...poi,
+          x: newCoords.x,
+          y: newCoords.y,
+          updatedAt: new Date()
+        })
+      } catch (error) {
+        console.error(`Failed to recalculate coordinates for POI ${poiId}:`, error)
+      }
+    }
+  })
+  
+  return Array.from(updatedPOIs.values())
+}
