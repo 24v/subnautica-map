@@ -152,7 +152,7 @@ export default function MapCanvas({
       ctx.fillStyle = '#00ff00';
       ctx.font = '12px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('New POI - Edit in sidebar', screenX, screenY - 25);
+      ctx.fillText('New POI', screenX, screenY - 25);
       
       ctx.globalAlpha = 1.0; // Reset alpha
     }

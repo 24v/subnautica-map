@@ -4,9 +4,9 @@ import { useState } from 'react';
 interface POIDetailsSidebarProps {
   poi: POI | null;
   onClose: () => void;
-  onDelete?: (poiId: string) => void;
-  onUpdate?: (poi: POI) => void;
-  onSave?: (poi: POI) => void;
+  onDelete: (poiId: string) => void;
+  onUpdate: (poi: POI) => void;
+  onSave: (poi: POI) => void;
   isProvisional?: boolean;
   coordinates?: {x: number, y: number} | null;
 }
@@ -21,9 +21,8 @@ export default function POIDetailsSidebar({
   coordinates = null
 }: POIDetailsSidebarProps) {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [isEditing, setIsEditing] = useState(isProvisional); // Start in edit mode for provisional POIs
+  // const [isEditing, setIsEditing] = useState(isProvisional); // Start in edit mode for provisional POIs
   
-  // Create default POI for ADD mode when poi is null but isProvisional is true
   const defaultPOI: POI = {
     id: `poi-${Date.now()}`,
     name: 'New POI',
@@ -35,26 +34,19 @@ export default function POIDetailsSidebar({
     updatedAt: new Date()
   };
   
-  const currentPOI = poi || (isProvisional ? defaultPOI : null);
-  const [editedPOI, setEditedPOI] = useState<POI | null>(isProvisional ? currentPOI : null);
-  
-  if (!currentPOI) return null;
-
+  const [currentPOI, setCurrentPOI] = useState(poi || defaultPOI);
   const metadata = POI_METADATA[currentPOI.type];
 
   const handleDeleteClick = (e: React.MouseEvent) => {
+    // TODO: Are these needed?
     e.preventDefault();
     e.stopPropagation();
-    
-    if (!onDelete) return;
     setShowConfirmDialog(true);
   };
 
   const handleConfirmDelete = () => {
-    if (onDelete) {
-      onDelete(currentPOI.id);
-      onClose();
-    }
+    onDelete(currentPOI.id);
+    onClose();
     setShowConfirmDialog(false);
   };
 
@@ -62,36 +54,43 @@ export default function POIDetailsSidebar({
     setShowConfirmDialog(false);
   };
 
-  const handleEditClick = () => {
-    setEditedPOI({ ...currentPOI });
-    setIsEditing(true);
-  };
+  // // // // const handleEditClick = () => {
+  // // //   setEditedPOI({ ...currentPOI });
+  // //   setIsEditing(true);
+  // };
 
-  const handleSaveEdit = () => {
-    if (editedPOI && onUpdate) {
-      const updatedPOI = {
-        ...currentPOI,
-        ...editedPOI,
-        updatedAt: new Date()
-      };
-      onUpdate(updatedPOI);
-      setIsEditing(false);
-      setEditedPOI(null);
-    }
-  };
+  // const handleUpdate = () => {
+  //     onUpdate({...currentPOI, updatedAt: new Date()});
+  //     setIsEditing(false);
+  //   }
+  // };
 
-  const handleCancelEdit = () => {
-    setIsEditing(false);
-    setEditedPOI(null);
-  };
 
-  const handleFieldChange = (field: keyof POI, value: any) => {
-    setEditedPOI({
-      ...currentPOI,
-      ...editedPOI,
-      [field]: value
-    });
-  };
+  // const handleSaveEdit = () => {
+  //   if (editedPOI && onUpdate) {
+  //     const updatedPOI = {
+  //       ...currentPOI,
+  //       ...editedPOI,
+  //       updatedAt: new Date()
+  //     };
+  //     onUpdate(updatedPOI);
+  //     setIsEditing(false);
+  //     setEditedPOI(null);
+  //   }
+  // };
+
+  // const handleCancelEdit = () => {
+  //   setIsEditing(false);
+  //   setEditedPOI(null);
+  // };
+
+  // const handleFieldChange = (field: keyof POI, value: any) => {
+  //   setEditedPOI({
+  //     ...currentPOI,
+  //     ...editedPOI,
+  //     [field]: value
+  //   });
+  // };
 
   return (
     <div className="poi-details-sidebar">
@@ -115,7 +114,7 @@ export default function POIDetailsSidebar({
               <input
                 type="text"
                 value={currentPOI.name}
-                onChange={(e) => handleFieldChange('name', e.target.value)}
+                // onChange={(e) => handleFieldChange('name', e.target.value)}
                 className="edit-input"
               />
             </div>
@@ -124,7 +123,7 @@ export default function POIDetailsSidebar({
               <label>Type</label>
               <select
                 value={currentPOI.type}
-                onChange={(e) => handleFieldChange('type', e.target.value as POIType)}
+                // onChange={(e) => handleFieldChange('type', e.target.value as POIType)}
                 className="edit-select"
               >
                 {Object.entries(POI_METADATA).map(([type, meta]) => (
@@ -147,7 +146,7 @@ export default function POIDetailsSidebar({
               <input
                 type="number"
                 value={currentPOI.depth || ''}
-                onChange={(e) => handleFieldChange('depth', e.target.value ? parseFloat(e.target.value) : undefined)}
+                // onChange={(e) => handleFieldChange('depth', e.target.value ? parseFloat(e.target.value) : undefined)}
                 className="edit-input"
                 placeholder="Optional"
               />
@@ -157,7 +156,7 @@ export default function POIDetailsSidebar({
               <label>Notes</label>
               <textarea
                 value={currentPOI.notes}
-                onChange={(e) => handleFieldChange('notes', e.target.value)}
+                // onChange={(e) => handleFieldChange('notes', e.target.value)}
                 className="edit-textarea"
                 placeholder="Add notes..."
                 rows={3}
@@ -173,32 +172,32 @@ export default function POIDetailsSidebar({
       </div>
 
       <div className="sidebar-actions">
-        {isEditing ? (
+        {!isProvisional ? (
           <>
             <button 
               className="save-btn"
-              onClick={handleSaveEdit}
+              // onClick={handleSaveEdit}
               title="Save changes"
             >
               💾 Save
             </button>
             <button 
               className="cancel-btn"
-              onClick={handleCancelEdit}
+              // onClick={handleCancelEdit}
               title="Cancel editing"
             >
               ❌ Cancel
             </button>
           </>
-        ) : isProvisional ? (
+        ) : (
           <>
             <button 
               className="save-btn"
               onClick={() => {
-                if (onSave) {
-                  const poiToSave = editedPOI || currentPOI;
-                  onSave(poiToSave);
-                }
+                // if (onSave) {
+                  // const poiToSave = editedPOI || currentPOI;
+                  // onSave(poiToSave);
+                // }
               }}
               title="Save new POI"
             >
@@ -211,29 +210,6 @@ export default function POIDetailsSidebar({
             >
               ❌ Cancel
             </button>
-          </>
-        ) : (
-          <>
-            <div className="action-buttons-row">
-              {onUpdate && (
-                <button 
-                  className="edit-btn"
-                  onClick={handleEditClick}
-                  title="Edit this POI"
-                >
-                  Edit POI
-                </button>
-              )}
-              {onDelete && (
-                <button 
-                  className="delete-btn"
-                  onClick={handleDeleteClick}
-                  title="Delete this POI"
-                >
-                  🗑️ Delete POI
-                </button>
-              )}
-            </div>
           </>
         )}
       </div>
