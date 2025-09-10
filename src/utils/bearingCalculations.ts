@@ -24,10 +24,9 @@ export function calculateBearingAndDistance(
   // Calculate distance
   const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
   
-  // Calculate bearing
-  // Math.atan2 returns angle in radians from -π to π
-  // Convert to compass bearing (0° = North, clockwise)
-  let bearing = Math.atan2(deltaX, -deltaY) * (180 / Math.PI);
+  // Calculate bearing FROM target TO starting point (reverse direction for navigation)
+  // This gives us the bearing you'd need to travel from the POI to reach the reference point
+  let bearing = Math.atan2(-deltaX, deltaY) * (180 / Math.PI);
   
   // Normalize to 0-359 degrees
   if (bearing < 0) {

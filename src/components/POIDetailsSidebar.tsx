@@ -1,5 +1,6 @@
 import { POI, POI_METADATA, POIType, BearingRecord, POIDefinitionMode } from '../types/poi';
 import { useEffect, useState } from 'react';
+import { CompassDial } from './ui/CompassDial';
 
 interface POIDetailsSidebarProps {
   poi: POI | null;
@@ -237,26 +238,32 @@ export default function POIDetailsSidebar({
                           />
                         </div>
                         <div className="bearing-field">
-                          <label>Bearing (degrees)</label>
-                          <input
-                            type="number"
-                            placeholder="0-359"
-                            value={bearing.bearing === 0 ? '' : bearing.bearing}
-                            onChange={(e) => handleBearingChange(index, 'bearing', e.target.value === '' ? 0 : parseInt(e.target.value))}
-                            className="bearing-input"
-                            min="0"
-                            max="359"
+                          <div className="bearing-header">
+                            <div className="bearing-label-section">
+                              <label>Bearing</label>
+                              <span className="bearing-display">{bearing.bearing}° {(() => {
+                                const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+                                const angles = [0, 45, 90, 135, 180, 225, 270, 315];
+                                const dirIndex = angles.findIndex(angle => Math.abs(angle - bearing.bearing) <= 22.5);
+                                return dirIndex >= 0 ? directions[dirIndex] : '';
+                              })()}</span>
+                            </div>
+                            <div className="bearing-actions">
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveBearing(bearing.id)}
+                                className="remove-bearing-btn"
+                                title="Remove bearing"
+                              >
+                                × Remove
+                              </button>
+                            </div>
+                          </div>
+                          <CompassDial
+                            value={bearing.bearing}
+                            onChange={(newBearing) => handleBearingChange(index, 'bearing', newBearing)}
+                            size={180}
                           />
-                        </div>
-                        <div className="bearing-actions">
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveBearing(bearing.id)}
-                            className="remove-bearing-btn"
-                            title="Remove bearing"
-                          >
-                            × Remove
-                          </button>
                         </div>
                       </div>
                     </div>

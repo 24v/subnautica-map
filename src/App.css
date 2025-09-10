@@ -94,7 +94,7 @@ body {
   position: fixed;
   top: 0;
   right: 0;
-  width: 300px;
+  width: 450px;
   height: 100vh;
   background-color: #000000;
   border: 2px solid #00ff00;
@@ -523,6 +523,49 @@ textarea:disabled {
 .calculated-coordinates small {
   color: #4ecdc4;
   font-family: monospace;
+}
+
+/* Compass Dial Styles */
+.compass-dial-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.compass-dial-linear {
+  background-color: rgba(0, 0, 0, 0.8);
+  border: 2px solid #00ff00;
+  user-select: none;
+}
+
+.bearing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.bearing-label-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.bearing-display {
+  font-size: 14px;
+  font-weight: bold;
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+  margin-top: 4px;
+}
+
+.bearing-direction {
+  font-size: 12px;
+  color: #888;
+  font-family: monospace;
+  text-transform: uppercase;
 }
 
 /* Map Manager Modal Styles */
