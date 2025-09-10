@@ -332,7 +332,7 @@ export default function POIDetailsSidebar({
                   onClick={onClose}
                   title="Cancel POI creation"
                 >
-                  ❌ Cancel
+                  Cancel
                 </button>
               </>
             )}
