@@ -32,16 +32,18 @@
 - [x] Remove fixed coordinates mode - all POIs use bearing-based positioning
 - [x] Handle POI deletion with bearing cleanup and coordinate recalculation
 
-## Phase 5: POI Management
-- [x] Edit POI name and notes (completed in sidebar)
-- [ ] Filter POIs by type (wreck, resource, biome, etc.)
-- [ ] Search POIs by name
+## Phase 5: POI Storage
 - [ ] Save POIs to localStorage
 - [ ] Load POIs from localStorage on startup
 - [ ] Export POI list as JSON
 - [ ] Import POI list from JSON
 
-## Phase 6: UI Polish (After Core Features Work)
+## Phase 6: POI Management
+- [x] Edit POI name and notes (completed in sidebar)
+- [ ] Filter POIs by type (wreck, resource, biome, etc.)
+- [ ] Search POIs by name
+
+## Phase 7: UI Polish (After Core Features Work)
 - [ ] Subnautica-themed colors (blue/teal/orange)
 - [x] Custom POI icons by type (emoji rendering implemented)
 - [ ] Smooth animations for interactions
@@ -51,6 +53,8 @@
 - [ ] Background ambient ocean sounds
 - [ ] Click/interaction sound effects
 - [ ] Audio toggle button
+
+## Follows
 - [ ] Allow and undo and confirmationless delete
 
 ## Completed

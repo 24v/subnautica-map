@@ -2,6 +2,21 @@
  * Point of Interest (POI) types and data structures for Subnautica Map
  */
 
+// Map storage types
+export interface POIMap {
+  id: string;
+  name: string;
+  pois: POI[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface MapStorage {
+  maps: Record<string, POIMap>;
+  currentMapId: string | null;
+  lastViewedMapId: string | null;
+}
+
 export type POIType = 
   | 'wreck'
   | 'structure'
