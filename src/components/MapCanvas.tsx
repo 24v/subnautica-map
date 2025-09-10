@@ -134,7 +134,7 @@ export default function MapCanvas({
     if (selectedPOI && selectedPOI.bearingRecords && selectedPOI.bearingRecords.length > 0) {
       console.log('Drawing bearing lines for POI:', selectedPOI.name, 'with', selectedPOI.bearingRecords.length, 'bearings');
       ctx.strokeStyle = '#00ffff';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 1; // Thinner line
       ctx.setLineDash([10, 5]);
       ctx.font = '10px monospace';
       ctx.fillStyle = '#00ffff';
@@ -155,6 +155,41 @@ export default function MapCanvas({
           ctx.moveTo(selectedScreenX, selectedScreenY);
           ctx.lineTo(refScreenX, refScreenY);
           ctx.stroke();
+
+          // Draw directional arrow based on bearing direction
+          const arrowSize = 12; // Bigger arrow
+          const arrowOffset = 25; // Distance from POI center
+          let arrowX, arrowY, arrowAngle;
+          
+          if (bearing.direction === 'to') {
+            // Arrow points FROM selected POI TO reference POI, positioned away from reference POI
+            const lineAngle = Math.atan2(refScreenY - selectedScreenY, refScreenX - selectedScreenX);
+            arrowX = refScreenX - Math.cos(lineAngle) * arrowOffset;
+            arrowY = refScreenY - Math.sin(lineAngle) * arrowOffset;
+            arrowAngle = lineAngle;
+          } else {
+            // Arrow points FROM reference POI TO selected POI, positioned away from selected POI
+            const lineAngle = Math.atan2(selectedScreenY - refScreenY, selectedScreenX - refScreenX);
+            arrowX = selectedScreenX - Math.cos(lineAngle) * arrowOffset;
+            arrowY = selectedScreenY - Math.sin(lineAngle) * arrowOffset;
+            arrowAngle = lineAngle;
+          }
+
+          // Draw arrow head
+          ctx.save();
+          ctx.translate(arrowX, arrowY);
+          ctx.rotate(arrowAngle);
+          ctx.beginPath();
+          ctx.moveTo(-arrowSize, -arrowSize/2);
+          ctx.lineTo(0, 0);
+          ctx.lineTo(-arrowSize, arrowSize/2);
+          ctx.closePath();
+          ctx.strokeStyle = '#00ffff'; // Cyan arrow to match bearing lines
+          ctx.fillStyle = '#00ffff';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          ctx.fill(); // Fill the arrow for better visibility
+          ctx.restore();
 
           // Calculate midpoint for label
           const midX = (selectedScreenX + refScreenX) / 2;

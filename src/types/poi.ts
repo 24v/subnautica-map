@@ -31,11 +31,14 @@ export type POIType =
 
 export type POIDefinitionMode = 'coordinates' | 'bearings';
 
+export type BearingDirection = 'to' | 'from';
+
 export interface BearingRecord {
   id: string;
-  referencePOIId: string; // The POI this bearing references from
+  referencePOIId: string; // The POI this bearing references
   distance: number; // Distance in meters
   bearing: number; // Compass bearing in degrees (0-359, where 0 = North)
+  direction: BearingDirection; // 'to' = bearing TO reference POI, 'from' = bearing FROM reference POI
   createdAt: Date;
 }
 

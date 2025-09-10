@@ -471,6 +471,21 @@ textarea:disabled {
   box-shadow: 0 0 3px rgba(0, 255, 0, 0.3);
 }
 
+.bearing-reference-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.bearing-poi-select {
+  flex: 2;
+}
+
+.bearing-direction-select {
+  flex: 1;
+  min-width: 80px;
+}
+
 .remove-bearing-btn {
   background-color: #003300;
   color: white;
