@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
-import { POI, POI_METADATA, BearingRecord, LIFEBOAT_5 } from '../types/poi';
+import { POI, POI_METADATA, BearingRecord } from '../types/poi';
 import { recalculatePOICoordinates } from '../utils/bearingCalculations';
+import { mapStorage } from '../services/mapStorage';
 import POIDetailsSidebar from './POIDetailsSidebar';
 
 interface MapCanvasProps {
@@ -19,10 +20,11 @@ export default function MapCanvas({
   onResetView
 }: MapCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [pois, setPois] = useState<POI[]>([LIFEBOAT_5]);
+  const [pois, setPois] = useState<POI[]>([]);
   const [selectedPOI, setSelectedPOI] = useState<POI | null>(null);
   const [isAddingPOI, setIsAddingPOI] = useState(false);
   const [newPOICoordinates, setNewPOICoordinates] = useState<{x: number, y: number} | null>(null);
+  const [currentMapId, setCurrentMapId] = useState<string | null>(null);
   
   // Pan state management
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
@@ -40,6 +42,35 @@ export default function MapCanvas({
     setZoomScale(1);
     onResetView?.();
   };
+
+  // Initialize map from storage on component mount
+  useEffect(() => {
+    const initializeMap = async () => {
+      try {
+        const currentMap = mapStorage.initialize();
+        setPois(currentMap.pois);
+        setCurrentMapId(currentMap.id);
+      } catch (error) {
+        console.error('Error initializing map:', error);
+        // Fallback to default state
+        setPois([]);
+        setCurrentMapId(null);
+      }
+    };
+
+    initializeMap();
+  }, []);
+
+  // Auto-save POIs whenever they change
+  useEffect(() => {
+    if (currentMapId && pois.length > 0) {
+      try {
+        mapStorage.updateMapPOIs(currentMapId, pois);
+      } catch (error) {
+        console.error('Error saving POIs:', error);
+      }
+    }
+  }, [pois, currentMapId]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

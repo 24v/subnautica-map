@@ -5,7 +5,6 @@
 import { POI, POIMap, MapStorage, LIFEBOAT_5 } from '../types/poi';
 
 const STORAGE_KEY = 'subnautica-maps';
-const CURRENT_MAP_KEY = 'subnautica-current-map';
 
 export class MapStorageService {
   /**
