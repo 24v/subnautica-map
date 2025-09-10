@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { POI, POI_METADATA, LIFEBOAT_5 } from '../types/poi';
+import { POI, POI_METADATA, BearingRecord, LIFEBOAT_5 } from '../types/poi';
 import { recalculatePOICoordinates } from '../utils/bearingCalculations';
 import POIDetailsSidebar from './POIDetailsSidebar';
 
@@ -93,17 +93,68 @@ export default function MapCanvas({
 
     // Origin point (Lifeboat 5) is now rendered as a regular POI with special emoji
 
+    // Draw bearing lines if a POI is selected
+    console.log('Checking bearing lines - selectedPOI:', selectedPOI?.name, 'bearingRecords:', selectedPOI?.bearingRecords);
+    if (selectedPOI && selectedPOI.bearingRecords && selectedPOI.bearingRecords.length > 0) {
+      console.log('Drawing bearing lines for POI:', selectedPOI.name, 'with', selectedPOI.bearingRecords.length, 'bearings');
+      ctx.strokeStyle = '#00ffff';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([10, 5]);
+      ctx.font = '10px monospace';
+      ctx.fillStyle = '#00ffff';
+      ctx.textAlign = 'center';
+
+      selectedPOI.bearingRecords.forEach((bearing: BearingRecord) => {
+        const referencePOI = pois.find(p => p.id === bearing.referencePOIId);
+        console.log('Looking for reference POI:', bearing.referencePOIId, 'found:', referencePOI?.name);
+        if (referencePOI) {
+          // Calculate screen coordinates for both POIs
+          const selectedScreenX = (selectedPOI.x * zoomScale) + (width / 2) + panOffset.x;
+          const selectedScreenY = (selectedPOI.y * zoomScale) + (height / 2) + panOffset.y;
+          const refScreenX = (referencePOI.x * zoomScale) + (width / 2) + panOffset.x;
+          const refScreenY = (referencePOI.y * zoomScale) + (height / 2) + panOffset.y;
+
+          // Draw line between POIs
+          ctx.beginPath();
+          ctx.moveTo(selectedScreenX, selectedScreenY);
+          ctx.lineTo(refScreenX, refScreenY);
+          ctx.stroke();
+
+          // Calculate midpoint for label
+          const midX = (selectedScreenX + refScreenX) / 2;
+          const midY = (selectedScreenY + refScreenY) / 2;
+
+          // Draw bearing distance label with background
+          const distanceText = `${bearing.distance}m`;
+          const textMetrics = ctx.measureText(distanceText);
+          const textWidth = textMetrics.width;
+          const textHeight = 12;
+
+          // Draw background rectangle for text
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+          ctx.fillRect(midX - textWidth/2 - 2, midY - textHeight/2 - 2, textWidth + 4, textHeight + 4);
+
+          // Draw distance text
+          ctx.fillStyle = '#00ffff';
+          ctx.fillText(distanceText, midX, midY + 3);
+        }
+      });
+
+      ctx.setLineDash([]); // Reset line dash
+    }
+
     // Draw POIs in screen coordinates
     pois.forEach(poi => {
       // Transform world coordinates to screen coordinates
-      // This should match the canvas transformation: translate(width/2 + panOffset.x, height/2 + panOffset.y) then scale(zoomScale)
-      const screenX = (poi.x * zoomScale) + (width / 2 + panOffset.x);
-      const screenY = (poi.y * zoomScale) + (height / 2 + panOffset.y);
+      // Center of canvas is at (width/2, height/2), then apply pan offset and zoom
+      const screenX = (poi.x * zoomScale) + (width / 2) + panOffset.x;
+      const screenY = (poi.y * zoomScale) + (height / 2) + panOffset.y;
       
       // Draw POI emoji
       const poiMetadata = POI_METADATA[poi.type];
       ctx.font = '16px monospace';
       ctx.textAlign = 'center';
+      ctx.fillStyle = '#ffffff'; // Set fill style before drawing emoji
       ctx.fillText(poiMetadata.emoji, screenX, screenY + 5); // +5 to center emoji vertically
 
       // Label POI
@@ -115,13 +166,14 @@ export default function MapCanvas({
 
     // Draw temporary POI when in ADD mode
     if (isAddingPOI && newPOICoordinates) {
-      const screenX = (newPOICoordinates.x * zoomScale) + (width / 2 + panOffset.x);
-      const screenY = (newPOICoordinates.y * zoomScale) + (height / 2 + panOffset.y);
+      const screenX = (newPOICoordinates.x * zoomScale) + (width / 2) + panOffset.x;
+      const screenY = (newPOICoordinates.y * zoomScale) + (height / 2) + panOffset.y;
       
       // Draw temporary POI with semi-transparent styling
       ctx.globalAlpha = 0.6;
       ctx.font = '16px monospace';
       ctx.textAlign = 'center';
+      ctx.fillStyle = '#ffffff'; // Set fill style before drawing emoji
       ctx.fillText('🎯', screenX, screenY + 5); // Default landmark emoji
 
       // Draw dashed circle around temporary POI
@@ -142,7 +194,7 @@ export default function MapCanvas({
       ctx.globalAlpha = 1.0; // Reset alpha
     }
 
-  }, [width, height, pois, panOffset, zoomScale, isAddingPOI, newPOICoordinates]);
+  }, [width, height, pois, panOffset, zoomScale, isAddingPOI, newPOICoordinates, selectedPOI]);
 
   // Separate useEffect for wheel event listener to fix passive event warnings
   useEffect(() => {

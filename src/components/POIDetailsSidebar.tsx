@@ -109,7 +109,7 @@ export default function POIDetailsSidebar({
   const handleAddBearing = () => {
     const newBearing: BearingRecord = {
       id: `bearing-${Date.now()}`,
-      targetPOIId: allPOIs.length > 0 ? allPOIs[0].id : '',
+      referencePOIId: allPOIs.length > 0 ? allPOIs[0].id : '',
       distance: 100,
       bearing: 0,
       createdAt: new Date()
@@ -128,11 +128,11 @@ export default function POIDetailsSidebar({
     });
   };
 
-  const handleBearingChange = (bearingId: string, field: keyof BearingRecord, value: any) => {
+  const handleBearingChange = (index: number, field: keyof BearingRecord, value: any) => {
     setCurrentPOI({
       ...currentPOI,
-      bearingRecords: (currentPOI.bearingRecords || []).map(bearing =>
-        bearing.id === bearingId ? { ...bearing, [field]: value } : bearing
+      bearingRecords: (currentPOI.bearingRecords || []).map((bearing, i) =>
+        i === index ? { ...bearing, [field]: value } : bearing
       )
     });
   };
@@ -218,14 +218,14 @@ export default function POIDetailsSidebar({
               <div className="poi-field">
                 <label>Bearings</label>
                 <div className="bearings-section">
-                  {(currentPOI.bearingRecords || []).map((bearing) => (
+                  {(currentPOI.bearingRecords || []).map((bearing, index) => (
                     <div key={bearing.id} className="bearing-entry">
                       <div className="bearing-controls">
                         <div className="bearing-field">
                           <label>Reference POI</label>
                           <select
-                            value={bearing.targetPOIId}
-                            onChange={(e) => handleBearingChange(bearing.id, 'targetPOIId', e.target.value)}
+                            value={bearing.referencePOIId}
+                            onChange={(e) => handleBearingChange(index, 'referencePOIId', e.target.value)}
                             className="bearing-select"
                           >
                             <option value="">Select reference POI</option>
@@ -242,7 +242,7 @@ export default function POIDetailsSidebar({
                             type="number"
                             placeholder="100"
                             value={bearing.distance === 0 ? '' : bearing.distance}
-                            onChange={(e) => handleBearingChange(bearing.id, 'distance', e.target.value === '' ? 0 : parseFloat(e.target.value))}
+                            onChange={(e) => handleBearingChange(index, 'distance', e.target.value === '' ? 0 : parseFloat(e.target.value))}
                             className="bearing-input"
                             min="0"
                           />
@@ -253,7 +253,7 @@ export default function POIDetailsSidebar({
                             type="number"
                             placeholder="0-359"
                             value={bearing.bearing === 0 ? '' : bearing.bearing}
-                            onChange={(e) => handleBearingChange(bearing.id, 'bearing', e.target.value === '' ? 0 : parseInt(e.target.value))}
+                            onChange={(e) => handleBearingChange(index, 'bearing', e.target.value === '' ? 0 : parseInt(e.target.value))}
                             className="bearing-input"
                             min="0"
                             max="359"

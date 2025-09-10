@@ -44,10 +44,10 @@ export function calculatePOICoordinates(
   if (bearingRecords.length === 1) {
     // Single bearing - simple calculation
     const record = bearingRecords[0];
-    const targetPOI = poiMap.get(record.targetPOIId);
+    const targetPOI = poiMap.get(record.referencePOIId);
     
     if (!targetPOI) {
-      throw new Error(`Target POI ${record.targetPOIId} not found`);
+      throw new Error(`Target POI ${record.referencePOIId} not found`);
     }
 
     const offset = bearingToOffset(record.bearing, record.distance);
@@ -73,9 +73,9 @@ function triangulatePosition(
 
   // Calculate position from each bearing record
   for (const record of bearingRecords) {
-    const targetPOI = poiMap.get(record.targetPOIId);
+    const targetPOI = poiMap.get(record.referencePOIId);
     if (!targetPOI) {
-      console.warn(`Target POI ${record.targetPOIId} not found, skipping bearing record`);
+      console.warn(`Target POI ${record.referencePOIId} not found, skipping bearing record`);
       continue;
     }
 
@@ -136,8 +136,8 @@ export function validateBearingRecords(
   const poiIds = new Set(allPOIs.map(poi => poi.id));
 
   for (const record of bearingRecords) {
-    if (!poiIds.has(record.targetPOIId)) {
-      errors.push(`Target POI ${record.targetPOIId} does not exist`);
+    if (!poiIds.has(record.referencePOIId)) {
+      errors.push(`Target POI ${record.referencePOIId} does not exist`);
     }
     
     if (record.distance <= 0) {

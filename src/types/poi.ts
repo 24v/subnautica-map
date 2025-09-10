@@ -18,7 +18,7 @@ export type POIDefinitionMode = 'coordinates' | 'bearings';
 
 export interface BearingRecord {
   id: string;
-  targetPOIId: string; // The POI this bearing points to
+  referencePOIId: string; // The POI this bearing references from
   distance: number; // Distance in meters
   bearing: number; // Compass bearing in degrees (0-359, where 0 = North)
   createdAt: Date;
