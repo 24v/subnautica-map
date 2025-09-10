@@ -47,6 +47,7 @@
 - [ ] Background ambient ocean sounds
 - [ ] Click/interaction sound effects
 - [ ] Audio toggle button
+- [ ] Allow and undo and confirmationless delete
 
 ## Completed
 - [x] Set up TypeScript + React + Vite project

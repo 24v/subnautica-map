@@ -108,15 +108,13 @@ export default function POIDetailsSidebar({
           ×
         </button>
       </div>
-
       <div className="sidebar-content">
-        {isEditing && editedPOI ? (
           <>
             <div className="poi-field">
               <label>Name</label>
               <input
                 type="text"
-                value={editedPOI.name}
+                value={currentPOI.name}
                 onChange={(e) => handleFieldChange('name', e.target.value)}
                 className="edit-input"
               />
@@ -125,7 +123,7 @@ export default function POIDetailsSidebar({
             <div className="poi-field">
               <label>Type</label>
               <select
-                value={editedPOI?.type || currentPOI.type}
+                value={currentPOI.type}
                 onChange={(e) => handleFieldChange('type', e.target.value as POIType)}
                 className="edit-select"
               >
@@ -148,7 +146,7 @@ export default function POIDetailsSidebar({
               <label>Depth (m)</label>
               <input
                 type="number"
-                value={editedPOI?.depth || currentPOI.depth || ''}
+                value={currentPOI.depth || ''}
                 onChange={(e) => handleFieldChange('depth', e.target.value ? parseFloat(e.target.value) : undefined)}
                 className="edit-input"
                 placeholder="Optional"
@@ -158,50 +156,20 @@ export default function POIDetailsSidebar({
             <div className="poi-field">
               <label>Notes</label>
               <textarea
-                value={editedPOI?.notes || currentPOI.notes}
+                value={currentPOI.notes}
                 onChange={(e) => handleFieldChange('notes', e.target.value)}
                 className="edit-textarea"
                 placeholder="Add notes..."
                 rows={3}
               />
             </div>
-          </>
-        ) : (
-          <>
-            <div className="poi-field">
-              <label>Type</label>
-              <div className="poi-type" style={{ color: metadata.color }}>
-                {metadata.label}
-              </div>
-            </div>
-
-            <div className="poi-field">
-              <label>Coordinates</label>
-              <div className="coordinates">
-                X: {currentPOI.x.toFixed(1)}, Y: {currentPOI.y.toFixed(1)}
-              </div>
-            </div>
-
-            {currentPOI.depth !== undefined && (
+            {currentPOI.createdAt && (
               <div className="poi-field">
-                <label>Depth</label>
-                {currentPOI.depth && <p><strong>Depth:</strong> {currentPOI.depth}m</p>}
+                <label>Created</label>
+                <p className="poi-timestamp">Created: {currentPOI.createdAt.toLocaleDateString()}</p>
               </div>
             )}
-
-            <div className="poi-field">
-              <label>Notes</label>
-              <div className="notes">
-                {currentPOI.notes && <p><strong>Notes:</strong> {currentPOI.notes}</p>}
-              </div>
-            </div>
-
-            <div className="poi-field">
-              <label>Created</label>
-              <p className="poi-timestamp">Created: {currentPOI.createdAt.toLocaleDateString()}</p>
-            </div>
           </>
-        )}
       </div>
 
       <div className="sidebar-actions">
