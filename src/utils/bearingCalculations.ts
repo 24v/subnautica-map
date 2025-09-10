@@ -37,16 +37,27 @@ export function calculateBearingAndDistance(
 }
 
 /**
- * Convert bearing (compass degrees) and distance to x,y offset
+ * Convert bearing (compass degrees) and distance to x,y offset, accounting for depth differences
  * @param bearing Compass bearing in degrees (0 = North, 90 = East, 180 = South, 270 = West)
- * @param distance Distance in meters
- * @returns Object with x and y offsets
+ * @param distance 3D distance in meters (includes depth component)
+ * @param fromDepth Depth of the reference POI
+ * @param toDepth Depth of the target POI
+ * @param direction Direction of the bearing ('to' or 'from')
+ * @returns Object with x and y offsets (horizontal components only)
  */
 export function bearingToOffset(
   bearing: number,
   distance: number,
-  direction: BearingDirection = 'to'
+  direction: BearingDirection = 'to',
+  fromDepth: number = 0,
+  toDepth: number = 0
 ): { x: number; y: number } {
+  // Calculate horizontal distance using Pythagorean theorem
+  // 3D distance² = horizontal distance² + vertical distance²
+  // Therefore: horizontal distance = √(3D distance² - vertical distance²)
+  const verticalDistance = Math.abs(toDepth - fromDepth)
+  const horizontalDistance = Math.sqrt(Math.max(0, distance * distance - verticalDistance * verticalDistance))
+  
   // Convert compass bearing to mathematical angle (0° = East, counterclockwise)
   // Compass: 0° = North, 90° = East, 180° = South, 270° = West
   // Math: 0° = East, 90° = North, 180° = West, 270° = South
@@ -61,8 +72,8 @@ export function bearingToOffset(
   const mathAngle = (90 - adjustedBearing) * (Math.PI / 180)
 
   return {
-    x: Math.cos(mathAngle) * distance,
-    y: -Math.sin(mathAngle) * distance, // Negative because canvas Y increases downward
+    x: Math.cos(mathAngle) * horizontalDistance,
+    y: -Math.sin(mathAngle) * horizontalDistance, // Negative because canvas Y increases downward
   }
 }
 
@@ -72,11 +83,13 @@ export function bearingToOffset(
  * If multiple bearing records exist, uses triangulation to find the best fit position
  * @param bearingRecords Array of bearing records for this POI
  * @param allPOIs Array of all POIs to find reference points
+ * @param poiDepth Depth of the POI being calculated
  * @returns Calculated x,y coordinates
  */
 export function calculatePOICoordinates(
   bearingRecords: BearingRecord[],
-  allPOIs: POI[]
+  allPOIs: POI[],
+  poiDepth: number = 0
 ): { x: number; y: number } {
   if (bearingRecords.length === 0) {
     throw new Error('Cannot calculate coordinates without bearing records')
@@ -94,7 +107,7 @@ export function calculatePOICoordinates(
       throw new Error(`Target POI ${record.referencePOIId} not found`)
     }
 
-    const offset = bearingToOffset(record.bearing, record.distance, record.direction)
+    const offset = bearingToOffset(record.bearing, record.distance, record.direction, targetPOI.depth, poiDepth)
     return {
       x: targetPOI.x + offset.x,
       y: targetPOI.y + offset.y,
@@ -102,7 +115,7 @@ export function calculatePOICoordinates(
   }
 
   // Multiple bearings - use triangulation
-  return triangulatePosition(bearingRecords, poiMap)
+  return triangulatePosition(bearingRecords, poiMap, poiDepth)
 }
 
 /**
@@ -111,7 +124,8 @@ export function calculatePOICoordinates(
  */
 function triangulatePosition(
   bearingRecords: BearingRecord[],
-  poiMap: Map<string, POI>
+  poiMap: Map<string, POI>,
+  poiDepth: number = 0
 ): { x: number; y: number } {
   const positions: Array<{ x: number; y: number }> = []
 
@@ -125,7 +139,7 @@ function triangulatePosition(
       continue
     }
 
-    const offset = bearingToOffset(record.bearing, record.distance, record.direction)
+    const offset = bearingToOffset(record.bearing, record.distance, record.direction, targetPOI.depth, poiDepth)
     positions.push({
       x: targetPOI.x + offset.x,
       y: targetPOI.y + offset.y,
@@ -159,7 +173,7 @@ export function recalculatePOICoordinates(poi: POI, allPOIs: POI[]): POI {
   }
 
   try {
-    const newCoords = calculatePOICoordinates(poi.bearingRecords, allPOIs)
+    const newCoords = calculatePOICoordinates(poi.bearingRecords, allPOIs, poi.depth)
     return {
       ...poi,
       x: newCoords.x,
@@ -359,7 +373,7 @@ export function recalculateAllPOICoordinates(allPOIs: POI[]): POI[] {
       try {
         // Use current state of all POIs for calculation
         const currentPOIs = Array.from(updatedPOIs.values())
-        const newCoords = calculatePOICoordinates(poi.bearingRecords, currentPOIs)
+        const newCoords = calculatePOICoordinates(poi.bearingRecords, currentPOIs, poi.depth)
         
         // Update the POI with new coordinates
         updatedPOIs.set(poiId, {

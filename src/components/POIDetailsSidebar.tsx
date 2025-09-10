@@ -383,22 +383,6 @@ export default function POIDetailsSidebar({
             </div>
           </div>
 
-          <div className="poi-field">
-            <label>Depth (m)</label>
-            <input
-              type="number"
-              value={currentPOI.depth}
-              onChange={(e) =>
-                setCurrentPOI({
-                  ...currentPOI,
-                  depth: parseFloat(e.target.value) || 0,
-                })
-              }
-              placeholder="0"
-              disabled={isLifeboat5}
-              readOnly={isLifeboat5}
-            />
-          </div>
 
           <div className="poi-field">
             <label>Notes</label>
